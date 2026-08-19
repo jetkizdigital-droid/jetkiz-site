@@ -19,11 +19,8 @@ export const metadata: Metadata = {
     template: "%s",
   },
   description:
-    "Рестораны Щучинска, знакомые блюда и местные курьеры — заказывайте еду по городу и Бурабаю в приложении JETKIZ.",
+    "Рестораны Щучинска, знакомые блюда и местные курьеры — заказывайте еду онлайн по Щучинску и Бурабайскому району через сайт JETKIZ.",
   themeColor: "#10140f",
-  other: {
-    "codex-preview": "development",
-  },
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
