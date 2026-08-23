@@ -173,6 +173,9 @@ export function SiteFooter() {
       <div className="mega-footer__column mega-footer__column--docs">
         <strong>{t.footerDocs}</strong>
         {t.documents.map(([label, href]) => <Link href={href} key={href}>{label}</Link>)}
+        <Link href="/account-deletion">
+          {lang === "ru" ? "Удаление аккаунта" : "Аккаунтты жою"}
+        </Link>
       </div>
       <div className="mega-footer__column mega-footer__contact">
         <strong>{t.footerContacts}</strong>
