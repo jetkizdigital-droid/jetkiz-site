@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "../../../components/LanguageProvider";
-import { formatKzt, type PublicRestaurant } from "../../../lib/jetkiz-api";
+import { formatKzt, restaurantPublicSlug, type PublicRestaurant } from "../../../lib/jetkiz-api";
 
 type CartLine = {
   productId: string;
@@ -37,6 +37,7 @@ export function DemoCheckoutClient({ restaurant }: { restaurant: PublicRestauran
   const ru = lang === "ru";
   const router = useRouter();
   const cartKey = `jetkiz-demo-cart:${restaurant.id}`;
+  const publicSlug = restaurantPublicSlug(restaurant);
   const [lines, setLines] = useState<CartLine[]>([]);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -76,7 +77,7 @@ export function DemoCheckoutClient({ restaurant }: { restaurant: PublicRestauran
       createdAt: new Date().toISOString(),
       restaurant: {
         id: restaurant.id,
-        slug: restaurant.slug,
+        slug: publicSlug,
         name: restaurant.nameRu || restaurant.nameKk || "JETKIZ",
         address: restaurant.address,
       },
@@ -102,7 +103,7 @@ export function DemoCheckoutClient({ restaurant }: { restaurant: PublicRestauran
   return (
     <section className="checkout-shell section-pad">
       <div className="checkout-main">
-        <Link className="restaurant-back" href={`/restaurants/${restaurant.slug}`}>← {ru ? "Вернуться в меню" : "Мәзірге оралу"}</Link>
+        <Link className="restaurant-back" href={`/restaurants/${publicSlug}`}>← {ru ? "Вернуться в меню" : "Мәзірге оралу"}</Link>
         <span className="kicker">JETKIZ · DEMO CHECKOUT</span>
         <h1>{ru ? "Оформление самовывоза" : "Алып кетуге тапсырыс рәсімдеу"}</h1>
         <div className="demo-notice">
