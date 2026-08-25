@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getPublicRestaurants } from "./lib/jetkiz-api";
+import { getPublicRestaurants, restaurantPublicSlug } from "./lib/jetkiz-api";
 
 const BASE_URL = "https://jetkiz.asia";
 
@@ -21,7 +21,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   const restaurantRoutes: MetadataRoute.Sitemap = restaurants.map((restaurant) => ({
-    url: `${BASE_URL}/restaurants/${encodeURIComponent(restaurant.slug)}`,
+    url: `${BASE_URL}/restaurants/${restaurantPublicSlug(restaurant)}`,
     lastModified: now,
     changeFrequency: "daily",
     priority: 0.9,
