@@ -9,7 +9,6 @@ type DemoOrder = {
   id: string;
   createdAt: string;
   restaurant: { id: string; slug: string; name: string; address?: string | null };
-  customer: { name: string; phone: string; comment: string };
   fulfillmentType: "PICKUP";
   paymentMethod: "PAY_ON_PICKUP";
   lines: Array<{
@@ -24,6 +23,7 @@ type DemoOrder = {
 };
 
 const DEMO_STAGES = [0, 7, 15, 24];
+const DEMO_ORDER_TTL_MS = 24 * 60 * 60 * 1000;
 
 export function DemoOrderStatusClient({ id }: { id: string }) {
   const { lang } = useLanguage();
@@ -32,9 +32,21 @@ export function DemoOrderStatusClient({ id }: { id: string }) {
   const [now, setNow] = useState(Date.now());
 
   useEffect(() => {
+    const storageKey = `jetkiz-demo-order:${id}`;
     try {
-      const raw = window.localStorage.getItem(`jetkiz-demo-order:${id}`);
-      setOrder(raw ? JSON.parse(raw) as DemoOrder : null);
+      const raw = window.localStorage.getItem(storageKey);
+      if (!raw) {
+        setOrder(null);
+        return;
+      }
+      const parsed = JSON.parse(raw) as DemoOrder;
+      const createdAt = new Date(parsed.createdAt).getTime();
+      if (!Number.isFinite(createdAt) || Date.now() - createdAt > DEMO_ORDER_TTL_MS) {
+        window.localStorage.removeItem(storageKey);
+        setOrder(null);
+        return;
+      }
+      setOrder(parsed);
     } catch {
       setOrder(null);
     }
@@ -63,7 +75,7 @@ export function DemoOrderStatusClient({ id }: { id: string }) {
       <section className="order-status-shell section-pad">
         <span className="kicker">JETKIZ · DEMO</span>
         <h1>{ru ? "Заказ не найден" : "Тапсырыс табылмады"}</h1>
-        <p>{ru ? "Демонстрационный заказ хранится только в браузере, в котором он был оформлен." : "Демонстрациялық тапсырыс тек рәсімделген браузерде сақталады."}</p>
+        <p>{ru ? "Демонстрационный заказ хранится только в этом браузере и автоматически удаляется через 24 часа." : "Демонстрациялық тапсырыс тек осы браузерде сақталады және 24 сағаттан кейін автоматты түрде жойылады."}</p>
         <Link className="button button--dark" href="/restaurants">{ru ? "К ресторанам" : "Мейрамханаларға"}</Link>
       </section>
     );
