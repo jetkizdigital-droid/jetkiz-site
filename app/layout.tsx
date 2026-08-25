@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import "./marketplace.css";
 import { LanguageProvider } from "./components/LanguageProvider";
 
 const geistSans = Geist({
@@ -14,6 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://jetkiz.asia"),
   title: {
     default: "JETKIZ — весь Щучинск в одном меню",
     template: "%s",
