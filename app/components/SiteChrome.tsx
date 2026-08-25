@@ -98,10 +98,21 @@ function CookieNotice() {
   );
 }
 
-export function SiteHeader({ current }: { current?: "restaurants" | "couriers" | "documents" }) {
+function buildNavigation(lang: "ru" | "kz", base: readonly (readonly [string, string])[]) {
+  const partnerLabel = lang === "ru" ? "Для ресторанов" : "Мейрамханаларға";
+  return [
+    [lang === "ru" ? "Рестораны" : "Мейрамханалар", "/restaurants"] as const,
+    ...base.map(([label, href]) =>
+      href === "/restaurants" ? ([partnerLabel, "/partners/restaurants"] as const) : ([label, href] as const),
+    ),
+  ];
+}
+
+export function SiteHeader({ current }: { current?: "catalog" | "restaurants" | "couriers" | "documents" }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { lang, setLang } = useLanguage();
   const t = commonCopy[lang];
+  const navItems = buildNavigation(lang, t.nav);
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
@@ -115,8 +126,10 @@ export function SiteHeader({ current }: { current?: "restaurants" | "couriers" |
           JETKIZ<span>●</span>
         </Link>
         <nav className="desktop-nav" aria-label={lang === "ru" ? "Навигация" : "Навигация"}>
-          {t.nav.map(([label, href]) => {
-            const active = (current === "restaurants" && href === "/restaurants") ||
+          {navItems.map(([label, href]) => {
+            const active =
+              (current === "catalog" && href === "/restaurants") ||
+              (current === "restaurants" && href === "/partners/restaurants") ||
               (current === "couriers" && href === "/couriers");
             return <Link className={active ? "is-active" : ""} href={href} key={href}>{label}</Link>;
           })}
@@ -127,7 +140,7 @@ export function SiteHeader({ current }: { current?: "restaurants" | "couriers" |
             <button className={lang === "ru" ? "is-active" : ""} onClick={() => setLang("ru")}>RU</button>
             <button className={lang === "kz" ? "is-active" : ""} onClick={() => setLang("kz")}>KZ</button>
           </div>
-          <Link className="header-order" href="/#how-order">{t.order}<Arrow /></Link>
+          <Link className="header-order" href="/restaurants">{t.order}<Arrow /></Link>
           <button className="menu-button" onClick={() => setMobileOpen(!mobileOpen)} aria-expanded={mobileOpen} aria-label={mobileOpen ? t.close : t.menu}>
             <span>{mobileOpen ? t.close : t.menu}</span>
             <i className={mobileOpen ? "is-open" : ""} />
@@ -136,10 +149,10 @@ export function SiteHeader({ current }: { current?: "restaurants" | "couriers" |
       </header>
 
       <div className={mobileOpen ? "mobile-menu is-open" : "mobile-menu"}>
-        {t.nav.map(([label, href], index) => (
-          <Link href={href} key={href} onClick={() => setMobileOpen(false)}><span>0{index + 1}</span>{label}</Link>
+        {navItems.map(([label, href], index) => (
+          <Link href={href} key={href} onClick={() => setMobileOpen(false)}><span>{String(index + 1).padStart(2, "0")}</span>{label}</Link>
         ))}
-        <Link href="/contacts" onClick={() => setMobileOpen(false)}><span>04</span>{lang === "ru" ? "Контакты" : "Байланыстар"}</Link>
+        <Link href="/contacts" onClick={() => setMobileOpen(false)}><span>{String(navItems.length + 1).padStart(2, "0")}</span>{lang === "ru" ? "Контакты" : "Байланыстар"}</Link>
       </div>
     </>
   );
@@ -148,6 +161,7 @@ export function SiteHeader({ current }: { current?: "restaurants" | "couriers" |
 export function SiteFooter() {
   const { lang } = useLanguage();
   const t = commonCopy[lang];
+  const footerLinks = buildNavigation(lang, t.links);
 
   return (
     <footer className="mega-footer">
@@ -168,7 +182,7 @@ export function SiteFooter() {
       </div>
       <div className="mega-footer__column">
         <strong>{t.footerMenu}</strong>
-        {t.links.map(([label, href]) => <Link href={href} key={href}>{label}</Link>)}
+        {footerLinks.map(([label, href]) => <Link href={href} key={href}>{label}</Link>)}
       </div>
       <div className="mega-footer__column mega-footer__column--docs">
         <strong>{t.footerDocs}</strong>
