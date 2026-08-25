@@ -7,6 +7,7 @@ import { Arrow, FaqList, PageShell, SiteFooter, SiteHeader, Spark } from "./comp
 export default function Home() {
   const { lang } = useLanguage();
   const t = homeCopy[lang];
+  const restaurantsCta = lang === "ru" ? "Открыть рестораны" : "Мейрамханаларды ашу";
 
   return (
     <PageShell>
@@ -26,7 +27,7 @@ export default function Home() {
           <div className="hero__under">
             <p>{t.heroText}</p>
             <div className="hero__actions">
-              <a className="button button--lime" href="#how-order">{t.heroPrimary}<Arrow /></a>
+              <a className="button button--lime" href="/restaurants">{restaurantsCta}<Arrow /></a>
               <a className="button button--glass" href="/delivery">{t.heroSecondary}<Arrow /></a>
             </div>
           </div>
@@ -105,7 +106,7 @@ export default function Home() {
           <h2 id="local-title">{t.localTitle}</h2>
           <p>{t.localText}</p>
           <ul>{t.localPoints.map((point) => <li key={point}><span>✓</span>{point}</li>)}</ul>
-          <a className="button button--lime" href="#how-order">{t.heroPrimary}<Arrow /></a>
+          <a className="button button--lime" href="/restaurants">{restaurantsCta}<Arrow /></a>
         </div>
         <span className="local-story__place" aria-hidden="true">BURABAY · SHCHUCHINSK · JETKIZ</span>
       </section>
@@ -154,7 +155,7 @@ export default function Home() {
           <h2>{t.finalTitle}</h2>
           <p>{t.finalText}</p>
           <div>
-            <a href="#how-order">{t.finalButtons[0]}<Arrow /></a>
+            <a href="/restaurants">{restaurantsCta}<Arrow /></a>
             <a href="/delivery">{t.finalButtons[1]}<Arrow /></a>
           </div>
         </div>
