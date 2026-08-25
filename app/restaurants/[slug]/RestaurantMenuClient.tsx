@@ -6,6 +6,7 @@ import { useLanguage } from "../../components/LanguageProvider";
 import {
   apiAssetUrl,
   formatKzt,
+  restaurantPublicSlug,
   type PublicMenu,
   type PublicMenuItem,
   type PublicRestaurant,
@@ -32,6 +33,7 @@ export function RestaurantMenuClient({
   const [cart, setCart] = useState<CartLine[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const cartKey = `jetkiz-demo-cart:${restaurant.id}`;
+  const publicSlug = restaurantPublicSlug(restaurant);
 
   useEffect(() => {
     try {
@@ -181,7 +183,7 @@ export function RestaurantMenuClient({
       {totalCount > 0 && (
         <div className="mobile-cart-bar">
           <div><small>{totalCount} {ru ? "поз." : "позиция"}</small><strong>{formatKzt(totalPrice)}</strong></div>
-          <Link href={`/restaurants/${restaurant.slug}/checkout`}>{ru ? "Корзина" : "Себет"} →</Link>
+          <Link href={`/restaurants/${publicSlug}/checkout`}>{ru ? "Корзина" : "Себет"} →</Link>
         </div>
       )}
     </>
