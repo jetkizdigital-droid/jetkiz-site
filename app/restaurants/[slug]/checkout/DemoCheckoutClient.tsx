@@ -19,7 +19,6 @@ type DemoOrder = {
   id: string;
   createdAt: string;
   restaurant: { id: string; slug: string; name: string; address?: string | null };
-  customer: { name: string; phone: string; comment: string };
   fulfillmentType: "PICKUP";
   paymentMethod: "PAY_ON_PICKUP";
   lines: CartLine[];
@@ -81,7 +80,6 @@ export function DemoCheckoutClient({ restaurant }: { restaurant: PublicRestauran
         name: restaurant.nameRu || restaurant.nameKk || "JETKIZ",
         address: restaurant.address,
       },
-      customer: { name: normalizedName, phone: phone.trim(), comment: comment.trim() },
       fulfillmentType: "PICKUP",
       paymentMethod: "PAY_ON_PICKUP",
       lines,
@@ -108,7 +106,7 @@ export function DemoCheckoutClient({ restaurant }: { restaurant: PublicRestauran
         <h1>{ru ? "Оформление самовывоза" : "Алып кетуге тапсырыс рәсімдеу"}</h1>
         <div className="demo-notice">
           <strong>{ru ? "Демонстрационный заказ" : "Демонстрациялық тапсырыс"}</strong>
-          <p>{ru ? "Этот заказ сохраняется только в вашем браузере и не передаётся ресторану. Сценарий показывает, как будет работать веб-заказ после подключения боевого checkout." : "Бұл тапсырыс тек браузеріңізде сақталады және мейрамханаға жіберілмейді. Сценарий нақты web-checkout қосылғаннан кейін тапсырыс қалай жұмыс істейтінін көрсетеді."}</p>
+          <p>{ru ? "Этот заказ не передаётся ресторану. Имя, телефон и комментарий используются только в форме и не сохраняются после создания demo-заказа; в браузере остаются только состав, сумма, ресторан и demo-код." : "Бұл тапсырыс мейрамханаға жіберілмейді. Аты, телефон және түсініктеме тек формада қолданылады және demo-тапсырыс жасалғаннан кейін сақталмайды; браузерде тек тапсырыс құрамы, сома, мейрамхана және demo-код қалады."}</p>
         </div>
 
         <div className="checkout-form">
