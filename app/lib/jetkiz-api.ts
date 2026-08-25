@@ -56,23 +56,30 @@ export type PublicMenu = {
 };
 
 async function apiFetch<T>(path: string): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    headers: {
-      Accept: "application/json",
-      "X-App": "website",
-      "X-Platform": "web",
-      "X-Locale": "ru",
-      "X-Timezone": "Asia/Almaty",
-    },
-    cache: "no-store",
-    signal: AbortSignal.timeout(5000),
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5000);
 
-  if (!response.ok) {
-    throw new Error(`JETKIZ API ${response.status}: ${path}`);
+  try {
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+      headers: {
+        Accept: "application/json",
+        "X-App": "website",
+        "X-Platform": "web",
+        "X-Locale": "ru",
+        "X-Timezone": "Asia/Almaty",
+      },
+      cache: "no-store",
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`JETKIZ API ${response.status}: ${path}`);
+    }
+
+    return response.json() as Promise<T>;
+  } finally {
+    clearTimeout(timeout);
   }
-
-  return response.json() as Promise<T>;
 }
 
 export async function getPublicRestaurants(): Promise<PublicRestaurant[]> {
