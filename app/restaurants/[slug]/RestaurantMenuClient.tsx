@@ -31,6 +31,7 @@ export function RestaurantMenuClient({
   const { lang } = useLanguage();
   const ru = lang === "ru";
   const [cart, setCart] = useState<CartLine[]>([]);
+  const [cartLoaded, setCartLoaded] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const cartKey = `jetkiz-demo-cart:${restaurant.id}`;
   const publicSlug = restaurantPublicSlug(restaurant);
@@ -38,19 +39,22 @@ export function RestaurantMenuClient({
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(cartKey);
-      if (raw) setCart(JSON.parse(raw) as CartLine[]);
+      setCart(raw ? JSON.parse(raw) as CartLine[] : []);
     } catch {
       setCart([]);
+    } finally {
+      setCartLoaded(true);
     }
   }, [cartKey]);
 
   useEffect(() => {
+    if (!cartLoaded) return;
     try {
       window.localStorage.setItem(cartKey, JSON.stringify(cart));
     } catch {
       // Cart remains usable for the current tab even if storage is unavailable.
     }
-  }, [cart, cartKey]);
+  }, [cart, cartKey, cartLoaded]);
 
   const categories = menu.categories ?? [];
   const items = menu.items ?? menu.products ?? [];
