@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useLanguage } from "../components/LanguageProvider";
-import { apiAssetUrl, type PublicRestaurant } from "../lib/jetkiz-api";
+import { apiAssetUrl, restaurantPublicSlug, type PublicRestaurant } from "../lib/jetkiz-api";
 
 export function RestaurantsCatalogClient({ restaurants }: { restaurants: PublicRestaurant[] }) {
   const { lang } = useLanguage();
@@ -23,7 +23,7 @@ export function RestaurantsCatalogClient({ restaurants }: { restaurants: PublicR
     <>
       <section className="marketplace-hero">
         <div className="marketplace-hero__copy">
-          <span className="kicker">JETKIZ · {ru ? "ЩУЧИНСК" : "ЩУЧИНСК"}</span>
+          <span className="kicker">JETKIZ · ЩУЧИНСК</span>
           <h1>{ru ? "Рестораны Щучинска" : "Щучинск мейрамханалары"}</h1>
           <p>
             {ru
@@ -75,8 +75,9 @@ export function RestaurantsCatalogClient({ restaurants }: { restaurants: PublicR
               const cover = apiAssetUrl(restaurant.coverImageUrl);
               const isOpen = restaurant.isOpenNow === true;
               const canAccept = restaurant.canAcceptOrders === true;
+              const publicSlug = restaurantPublicSlug(restaurant);
               return (
-                <Link className="restaurant-card" href={`/restaurants/${restaurant.slug}`} key={restaurant.id}>
+                <Link className="restaurant-card" href={`/restaurants/${publicSlug}`} key={restaurant.id}>
                   <div className="restaurant-card__media">
                     {cover ? <img src={cover} alt={restaurant.nameRu} loading="lazy" /> : <div className="restaurant-card__placeholder">JETKIZ</div>}
                     <span className={isOpen ? "restaurant-state is-open" : "restaurant-state"}>
@@ -90,7 +91,7 @@ export function RestaurantsCatalogClient({ restaurants }: { restaurants: PublicR
                         <span>★ {Number(restaurant.ratingAvg ?? 0).toFixed(1)}</span>
                       )}
                     </div>
-                    <p>{restaurant.address || (ru ? "Щучинск" : "Щучинск")}</p>
+                    <p>{restaurant.address || "Щучинск"}</p>
                     <div className="restaurant-card__meta">
                       <span>{restaurant.workingHours || (ru ? "График уточняется" : "Кесте нақтылануда")}</span>
                       <span>{canAccept ? (ru ? "Принимает заказы" : "Тапсырыс қабылдайды") : ru ? "Меню доступно" : "Мәзір қолжетімді"}</span>
