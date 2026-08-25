@@ -65,6 +65,7 @@ async function apiFetch<T>(path: string): Promise<T> {
       "X-Timezone": "Asia/Almaty",
     },
     cache: "no-store",
+    signal: AbortSignal.timeout(5000),
   });
 
   if (!response.ok) {
