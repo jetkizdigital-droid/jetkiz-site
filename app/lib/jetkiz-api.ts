@@ -88,7 +88,17 @@ export async function getPublicRestaurants(): Promise<PublicRestaurant[]> {
 export async function getPublicRestaurantBySlug(slug: string): Promise<PublicRestaurant | null> {
   const normalized = decodeURIComponent(slug).trim().toLowerCase();
   const restaurants = await getPublicRestaurants();
-  return restaurants.find((restaurant) => restaurant.slug?.toLowerCase() === normalized) ?? null;
+  const publicNumber = normalized.match(/-r(\d+)$/)?.[1];
+
+  if (publicNumber) {
+    const number = Number(publicNumber);
+    const byNumber = restaurants.find((restaurant) => Number(restaurant.number) === number);
+    if (byNumber) return byNumber;
+  }
+
+  return restaurants.find((restaurant) =>
+    restaurant.slug?.toLowerCase() === normalized || restaurantPublicSlug(restaurant) === normalized,
+  ) ?? null;
 }
 
 export async function getPublicMenu(restaurantId: string): Promise<PublicMenu | null> {
@@ -98,6 +108,32 @@ export async function getPublicMenu(restaurantId: string): Promise<PublicMenu | 
     console.error("Failed to load public restaurant menu", error);
     return null;
   }
+}
+
+export function restaurantPublicSlug(restaurant: Pick<PublicRestaurant, "number" | "nameRu" | "slug">): string {
+  const brand = latinSlug(restaurant.nameRu) || "restaurant";
+  const number = Number(restaurant.number);
+  if (Number.isInteger(number) && number > 0) return `${brand}-r${number}`;
+  return restaurant.slug;
+}
+
+function latinSlug(value: string): string {
+  const map: Record<string, string> = {
+    а: "a", б: "b", в: "v", г: "g", д: "d", е: "e", ё: "e", ж: "zh", з: "z", и: "i", й: "y",
+    к: "k", л: "l", м: "m", н: "n", о: "o", п: "p", р: "r", с: "s", т: "t", у: "u", ф: "f",
+    х: "h", ц: "c", ч: "ch", ш: "sh", щ: "sch", ы: "y", э: "e", ю: "yu", я: "ya", ь: "", ъ: "",
+    ә: "a", ғ: "g", қ: "q", ң: "n", ө: "o", ұ: "u", ү: "u", һ: "h", і: "i",
+  };
+
+  return value
+    .toLowerCase()
+    .split("")
+    .map((character) => map[character] ?? character)
+    .join("")
+    .normalize("NFKD")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .replace(/-+/g, "-");
 }
 
 export function apiAssetUrl(value?: string | null): string | null {
