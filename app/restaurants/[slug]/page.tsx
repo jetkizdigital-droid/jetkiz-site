@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageShell, SiteFooter, SiteHeader } from "../../components/SiteChrome";
-import { getPublicMenu, getPublicRestaurantBySlug } from "../../lib/jetkiz-api";
+import { getPublicMenu, getPublicRestaurantBySlug, restaurantPublicSlug } from "../../lib/jetkiz-api";
 import { RestaurantMenuClient } from "./RestaurantMenuClient";
 
 type PageProps = { params: Promise<{ slug: string }> };
@@ -14,11 +14,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const title = `${restaurant.nameRu} — меню и самовывоз в Щучинске | JETKIZ`;
   const description = restaurant.descriptionRu?.trim() ||
     `Меню ресторана ${restaurant.nameRu} в Щучинске: актуальные блюда, цены, режим работы и демонстрационное оформление самовывоза через JETKIZ.`;
+  const publicSlug = restaurantPublicSlug(restaurant);
 
   return {
     title,
     description,
-    alternates: { canonical: `/restaurants/${restaurant.slug}` },
+    alternates: { canonical: `/restaurants/${publicSlug}` },
     openGraph: {
       title,
       description,
