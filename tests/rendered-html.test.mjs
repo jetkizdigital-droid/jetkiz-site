@@ -32,7 +32,7 @@ test("renders development preview metadata", async () => {
   assert.match(await response.text(), developmentPreviewMeta);
 });
 
-test("renders client, restaurant, courier and document routes", async () => {
+test("renders marketplace, partner, courier and document routes", async () => {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("routes", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
@@ -44,7 +44,8 @@ test("renders client, restaurant, courier and document routes", async () => {
   const context = { waitUntil() {}, passThroughOnException() {} };
   const routes = [
     ["/", "Весь Щучинск"],
-    ["/restaurants", "Больше заказов"],
+    ["/restaurants", "Рестораны Щучинска"],
+    ["/partners/restaurants", "Больше заказов"],
     ["/couriers", "Знаете город"],
     ["/offer", "Пользовательское соглашение и публичная оферта"],
     ["/privacy", "Политика конфиденциальности"],
