@@ -2,6 +2,7 @@
 
 import { legalDocs } from "../legal-data";
 import { commonCopy, WHATSAPP_URL } from "../site-data";
+import { normalizeDeliveryCopy } from "../lib/delivery-copy";
 import { useLanguage } from "./LanguageProvider";
 import { Arrow, PageShell, SiteFooter, SiteHeader } from "./SiteChrome";
 
@@ -9,6 +10,10 @@ export function LegalPage({ documentKey }: { documentKey: string }) {
   const { lang } = useLanguage();
   const doc = legalDocs[documentKey][lang];
   const common = commonCopy[lang];
+  const sections = doc.sections.map(([title, body]) => [
+    title,
+    normalizeDeliveryCopy(body, lang),
+  ] as const);
 
   return (
     <PageShell>
@@ -45,7 +50,7 @@ export function LegalPage({ documentKey }: { documentKey: string }) {
             </div>
           </div>
 
-          {doc.sections.map(([title, body]) => (
+          {sections.map(([title, body]) => (
             <section key={title} data-reveal>
               <h2>{title}</h2>
               {body.split("\n\n").map((paragraph) => (
