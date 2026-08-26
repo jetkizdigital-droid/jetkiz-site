@@ -287,7 +287,7 @@ export function FaqList({ items }: { items: readonly (readonly [string, string])
     <div className="faq__list" data-reveal>
       {items.map(([question, answer], index) => (
         <article className={open === index ? "faq-item is-open" : "faq-item"} key={question}>
-          <button onClick={() => setOpen(open === index ? -1 : "")} aria-expanded={open === index}>
+          <button onClick={() => setOpen(open === index ? -1 : index)} aria-expanded={open === index}>
             <span>{question}</span><i>+</i>
           </button>
           <div><p>{answer}</p></div>
