@@ -1,6 +1,7 @@
 "use client";
 
 import { courierWhatsApp, partnerCopy, restaurantWhatsApp } from "../site-data";
+import { normalizeDeliveryCopy } from "../lib/delivery-copy";
 import { useLanguage } from "./LanguageProvider";
 import { Arrow, FaqList, PageShell, SiteFooter, SiteHeader, Spark } from "./SiteChrome";
 
@@ -10,6 +11,10 @@ export function PartnerPage({ kind }: { kind: PartnerKind }) {
   const { lang } = useLanguage();
   const t = partnerCopy[kind][lang];
   const action = kind === "restaurants" ? restaurantWhatsApp : courierWhatsApp;
+  const faqs = t.faqs.map(([question, answer]) => [
+    question,
+    normalizeDeliveryCopy(answer, lang),
+  ] as const);
 
   return (
     <PageShell>
@@ -97,7 +102,7 @@ export function PartnerPage({ kind }: { kind: PartnerKind }) {
           <span className="kicker">04 — FAQ</span>
           <h2 id="partner-faq-title">{t.faqTitle}</h2>
         </div>
-        <FaqList items={t.faqs} />
+        <FaqList items={faqs} />
       </section>
 
       <section className={`partner-final partner-final--${kind}`}>
