@@ -17,6 +17,72 @@ export const Spark = () => (
   </svg>
 );
 
+const VisaMark = () => (
+  <span
+    aria-label="Visa"
+    role="img"
+    style={{
+      width: 62,
+      height: 34,
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: 8,
+      background: "#fff",
+      flex: "0 0 auto",
+    }}
+  >
+    <svg viewBox="0 0 120 40" aria-hidden="true" style={{ width: 50, height: 22 }}>
+      <text
+        x="60"
+        y="29"
+        textAnchor="middle"
+        fill="#1434CB"
+        fontFamily="Arial Black, Arial, sans-serif"
+        fontSize="29"
+        fontStyle="italic"
+        fontWeight="900"
+        letterSpacing="-2"
+      >
+        VISA
+      </text>
+    </svg>
+  </span>
+);
+
+const MastercardMark = () => (
+  <span
+    aria-label="Mastercard"
+    role="img"
+    style={{
+      width: 82,
+      height: 34,
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: 8,
+      background: "#fff",
+      flex: "0 0 auto",
+    }}
+  >
+    <svg viewBox="0 0 132 40" aria-hidden="true" style={{ width: 70, height: 24 }}>
+      <circle cx="31" cy="20" r="15" fill="#EB001B" />
+      <circle cx="49" cy="20" r="15" fill="#F79E1B" />
+      <path d="M40 8.2a15 15 0 0 1 0 23.6 15 15 0 0 1 0-23.6Z" fill="#FF5F00" />
+      <text
+        x="68"
+        y="24.5"
+        fill="#111"
+        fontFamily="Arial, sans-serif"
+        fontSize="11.5"
+        fontWeight="700"
+      >
+        mastercard
+      </text>
+    </svg>
+  </span>
+);
+
 export function PageShell({ children }: { children: React.ReactNode }) {
   const pageRef = useRef<HTMLElement>(null);
   const { lang } = useLanguage();
@@ -199,7 +265,16 @@ export function SiteFooter() {
       </div>
       <div className="mega-footer__bottom">
         <small>{t.copyright}</small>
-        <span>SHCHUCHINSK · BURABAY · KAZAKHSTAN</span>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 16, flexWrap: "wrap" }}>
+          <span>SHCHUCHINSK · BURABAY · KAZAKHSTAN</span>
+          <span
+            aria-label={lang === "ru" ? "Платёжные системы Visa и Mastercard" : "Visa және Mastercard төлем жүйелері"}
+            style={{ display: "inline-flex", alignItems: "center", gap: 8 }}
+          >
+            <VisaMark />
+            <MastercardMark />
+          </span>
+        </div>
       </div>
     </footer>
   );
@@ -212,7 +287,7 @@ export function FaqList({ items }: { items: readonly (readonly [string, string])
     <div className="faq__list" data-reveal>
       {items.map(([question, answer], index) => (
         <article className={open === index ? "faq-item is-open" : "faq-item"} key={question}>
-          <button onClick={() => setOpen(open === index ? -1 : index)} aria-expanded={open === index}>
+          <button onClick={() => setOpen(open === index ? -1 : "")} aria-expanded={open === index}>
             <span>{question}</span><i>+</i>
           </button>
           <div><p>{answer}</p></div>
