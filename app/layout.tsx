@@ -24,8 +24,8 @@ export const metadata: Metadata = {
     "Рестораны Щучинска, знакомые блюда и местные курьеры — заказывайте еду онлайн по Щучинску и Бурабайскому району через сайт JETKIZ.",
   themeColor: "#10140f",
   icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
   },
 };
 
