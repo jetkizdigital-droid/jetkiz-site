@@ -11,9 +11,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const restaurant = await getPublicRestaurantBySlug(slug);
   if (!restaurant) return { title: "Ресторан не найден — JETKIZ" };
 
-  const title = `${restaurant.nameRu} — меню и самовывоз в Щучинске | JETKIZ`;
+  const title = `${restaurant.nameRu} — заказать еду в Щучинске`;
   const description = restaurant.descriptionRu?.trim() ||
-    `Меню ресторана ${restaurant.nameRu} в Щучинске: актуальные блюда, цены, режим работы и демонстрационное оформление самовывоза через JETKIZ.`;
+    `Меню ресторана ${restaurant.nameRu} в Щучинске: актуальные блюда и цены, доставка и самовывоз через JETKIZ.`;
   const publicSlug = restaurantPublicSlug(restaurant);
 
   return {
