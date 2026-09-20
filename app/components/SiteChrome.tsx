@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { commonCopy } from "../site-data";
 import { useLanguage } from "./LanguageProvider";
+import { useWebAuth } from "./WebAuthProvider";
 
 export const Arrow = () => (
   <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
@@ -17,68 +18,30 @@ export const Spark = () => (
   </svg>
 );
 
+function BrandLogo({ compact = false }: { compact?: boolean }) {
+  return (
+    <Link className={compact ? "brand brand--compact" : "brand"} href="/restaurants" aria-label="JETKIZ — доставка еды в Щучинске">
+      <img src="/jetkiz-logo.svg" alt="JETKIZ" />
+      {!compact && <span>доставка еды в Щучинске</span>}
+    </Link>
+  );
+}
+
 const VisaMark = () => (
-  <span
-    aria-label="Visa"
-    role="img"
-    style={{
-      width: 62,
-      height: 34,
-      display: "inline-flex",
-      alignItems: "center",
-      justifyContent: "center",
-      borderRadius: 8,
-      background: "#fff",
-      flex: "0 0 auto",
-    }}
-  >
-    <svg viewBox="0 0 120 40" aria-hidden="true" style={{ width: 50, height: 22 }}>
-      <text
-        x="60"
-        y="29"
-        textAnchor="middle"
-        fill="#1434CB"
-        fontFamily="Arial Black, Arial, sans-serif"
-        fontSize="29"
-        fontStyle="italic"
-        fontWeight="900"
-        letterSpacing="-2"
-      >
-        VISA
-      </text>
+  <span aria-label="Visa" role="img" className="payment-mark">
+    <svg viewBox="0 0 120 40" aria-hidden="true">
+      <text x="60" y="29" textAnchor="middle" fill="#1434CB" fontFamily="Arial Black, Arial, sans-serif" fontSize="29" fontStyle="italic" fontWeight="900" letterSpacing="-2">VISA</text>
     </svg>
   </span>
 );
 
 const MastercardMark = () => (
-  <span
-    aria-label="Mastercard"
-    role="img"
-    style={{
-      width: 82,
-      height: 34,
-      display: "inline-flex",
-      alignItems: "center",
-      justifyContent: "center",
-      borderRadius: 8,
-      background: "#fff",
-      flex: "0 0 auto",
-    }}
-  >
-    <svg viewBox="0 0 132 40" aria-hidden="true" style={{ width: 70, height: 24 }}>
+  <span aria-label="Mastercard" role="img" className="payment-mark payment-mark--mastercard">
+    <svg viewBox="0 0 132 40" aria-hidden="true">
       <circle cx="31" cy="20" r="15" fill="#EB001B" />
       <circle cx="49" cy="20" r="15" fill="#F79E1B" />
       <path d="M40 8.2a15 15 0 0 1 0 23.6 15 15 0 0 1 0-23.6Z" fill="#FF5F00" />
-      <text
-        x="68"
-        y="24.5"
-        fill="#111"
-        fontFamily="Arial, sans-serif"
-        fontSize="11.5"
-        fontWeight="700"
-      >
-        mastercard
-      </text>
+      <text x="68" y="24.5" fill="#111" fontFamily="Arial, sans-serif" fontSize="11.5" fontWeight="700">mastercard</text>
     </svg>
   </span>
 );
@@ -177,6 +140,7 @@ function buildNavigation(lang: "ru" | "kz", base: readonly (readonly [string, st
 export function SiteHeader({ current }: { current?: "catalog" | "restaurants" | "couriers" | "documents" }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { lang, setLang } = useLanguage();
+  const { user, loading, openLogin } = useWebAuth();
   const t = commonCopy[lang];
   const navItems = buildNavigation(lang, t.nav);
 
@@ -185,13 +149,15 @@ export function SiteHeader({ current }: { current?: "catalog" | "restaurants" | 
     return () => { document.body.style.overflow = ""; };
   }, [mobileOpen]);
 
+  const profileLabel =
+    String(user?.firstName ?? user?.name ?? "").trim() ||
+    (lang === "ru" ? "Профиль" : "Профиль");
+
   return (
     <>
-      <header className="site-header">
-        <Link className="brand" href="/" aria-label="JETKIZ">
-          JETKIZ<span>●</span>
-        </Link>
-        <nav className="desktop-nav" aria-label={lang === "ru" ? "Навигация" : "Навигация"}>
+      <header className="site-header site-header--marketplace">
+        <BrandLogo />
+        <nav className="desktop-nav" aria-label="Навигация">
           {navItems.map(([label, href]) => {
             const active =
               (current === "catalog" && href === "/restaurants") ||
@@ -206,7 +172,13 @@ export function SiteHeader({ current }: { current?: "catalog" | "restaurants" | 
             <button className={lang === "ru" ? "is-active" : ""} onClick={() => setLang("ru")}>RU</button>
             <button className={lang === "kz" ? "is-active" : ""} onClick={() => setLang("kz")}>KZ</button>
           </div>
-          <Link className="header-order" href="/restaurants">{t.order}<Arrow /></Link>
+          {user ? (
+            <Link className="header-account" href="/account">{profileLabel}</Link>
+          ) : (
+            <button className="header-account" type="button" disabled={loading} onClick={openLogin}>
+              {loading ? "…" : lang === "ru" ? "Войти" : "Кіру"}
+            </button>
+          )}
           <button className="menu-button" onClick={() => setMobileOpen(!mobileOpen)} aria-expanded={mobileOpen} aria-label={mobileOpen ? t.close : t.menu}>
             <span>{mobileOpen ? t.close : t.menu}</span>
             <i className={mobileOpen ? "is-open" : ""} />
@@ -215,10 +187,17 @@ export function SiteHeader({ current }: { current?: "catalog" | "restaurants" | 
       </header>
 
       <div className={mobileOpen ? "mobile-menu is-open" : "mobile-menu"}>
+        <BrandLogo compact />
         {navItems.map(([label, href], index) => (
           <Link href={href} key={href} onClick={() => setMobileOpen(false)}><span>{String(index + 1).padStart(2, "0")}</span>{label}</Link>
         ))}
-        <Link href="/contacts" onClick={() => setMobileOpen(false)}><span>{String(navItems.length + 1).padStart(2, "0")}</span>{lang === "ru" ? "Контакты" : "Байланыстар"}</Link>
+        {user ? (
+          <Link href="/account" onClick={() => setMobileOpen(false)}><span>{String(navItems.length + 1).padStart(2, "0")}</span>{profileLabel}</Link>
+        ) : (
+          <button className="mobile-menu__login" onClick={() => { setMobileOpen(false); openLogin(); }}>
+            {lang === "ru" ? "Войти по номеру телефона" : "Телефон нөмірімен кіру"}
+          </button>
+        )}
       </div>
     </>
   );
@@ -232,12 +211,11 @@ export function SiteFooter() {
   return (
     <footer className="mega-footer">
       <div className="mega-footer__brand">
-        <Link className="brand" href="/">JETKIZ<span>●</span></Link>
+        <BrandLogo compact />
         <h2>{t.footerTagline}</h2>
         <p>{t.footerText}</p>
         <a className="astana-hub-badge" href="https://astanahub.com/" target="_blank" rel="noreferrer">
           <span className="astana-hub-badge__logo">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="https://cdn.astanahub.com/static/img_v2/logo.svg" alt="Astana Hub" />
           </span>
           <span>
@@ -253,9 +231,7 @@ export function SiteFooter() {
       <div className="mega-footer__column mega-footer__column--docs">
         <strong>{t.footerDocs}</strong>
         {t.documents.map(([label, href]) => <Link href={href} key={href}>{label}</Link>)}
-        <Link href="/account-deletion">
-          {lang === "ru" ? "Удаление аккаунта" : "Аккаунтты жою"}
-        </Link>
+        <Link href="/account-deletion">{lang === "ru" ? "Удаление аккаунта" : "Аккаунтты жою"}</Link>
       </div>
       <div className="mega-footer__column mega-footer__contact">
         <strong>{t.footerContacts}</strong>
@@ -265,12 +241,9 @@ export function SiteFooter() {
       </div>
       <div className="mega-footer__bottom">
         <small>{t.copyright}</small>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 16, flexWrap: "wrap" }}>
+        <div className="mega-footer__payment-row">
           <span>SHCHUCHINSK · BURABAY · KAZAKHSTAN</span>
-          <span
-            aria-label={lang === "ru" ? "Платёжные системы Visa и Mastercard" : "Visa және Mastercard төлем жүйелері"}
-            style={{ display: "inline-flex", alignItems: "center", gap: 8 }}
-          >
+          <span aria-label={lang === "ru" ? "Платёжные системы Visa и Mastercard" : "Visa және Mastercard төлем жүйелері"} className="mega-footer__payment-marks">
             <VisaMark />
             <MastercardMark />
           </span>
