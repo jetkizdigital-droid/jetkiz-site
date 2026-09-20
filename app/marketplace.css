@@ -3166,3 +3166,392 @@ body {
     white-space: normal;
   }
 }
+
+
+/* order detail v2 */
+.order-status-shell {
+  max-width: 1180px;
+  margin: 0 auto;
+  min-height: 72vh;
+  padding: 34px clamp(20px, 4vw, 48px) 86px;
+  color: #171a16;
+}
+
+.order-status-shell > p {
+  padding: 40px 0;
+  color: #797e77;
+}
+
+.order-status-hero {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 16px;
+  padding: 26px 28px;
+  border-radius: 24px;
+  background: #171b16;
+  color: #fff;
+}
+
+.order-status-hero::after {
+  content: "";
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  right: -56px;
+  top: -76px;
+  border-radius: 50%;
+  background: #b9ff28;
+  opacity: .95;
+}
+
+.order-status-hero .kicker {
+  position: relative;
+  z-index: 1;
+  color: #b9ff28;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .12em;
+}
+
+.order-status-hero h1 {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+  margin: 8px 0 6px;
+  font-size: clamp(34px, 5vw, 56px);
+  line-height: .98;
+  letter-spacing: -.055em;
+}
+
+.order-status-hero > p {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  color: rgba(255,255,255,.68);
+  font-size: 14px;
+}
+
+.order-status-updated {
+  position: relative;
+  z-index: 1;
+  display: block;
+  margin-top: 13px;
+  color: rgba(255,255,255,.45);
+  font-size: 10px;
+}
+
+.order-status-grid {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) 260px;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.order-progress-card,
+.pickup-code-card,
+.order-receipt,
+.order-status-canceled {
+  border: 0;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 1px 0 rgba(17,20,17,.03);
+}
+
+.order-progress-card {
+  padding: 22px;
+}
+
+.order-progress-card h2 {
+  margin: 0 0 18px;
+  font-size: 21px;
+  letter-spacing: -.03em;
+}
+
+.order-progress {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0,1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.order-progress li {
+  min-width: 0;
+}
+
+.order-progress li > span {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 8px;
+  border-radius: 50%;
+  background: #eceee9;
+  color: #8e938b;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.order-progress li::after {
+  content: "";
+  display: block;
+  height: 4px;
+  margin: -23px 0 18px 34px;
+  border-radius: 999px;
+  background: #eceee9;
+}
+
+.order-progress li:last-child::after {
+  display: none;
+}
+
+.order-progress li.is-done > span {
+  background: #b9ff28;
+  color: #1f2c18;
+}
+
+.order-progress li.is-done::after {
+  background: #b9ff28;
+}
+
+.order-progress li > div {
+  display: grid;
+  gap: 3px;
+}
+
+.order-progress li strong {
+  font-size: 10px;
+  line-height: 1.25;
+}
+
+.order-progress li small {
+  color: #989c95;
+  font-size: 8px;
+  line-height: 1.25;
+}
+
+.pickup-code-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 180px;
+  padding: 22px;
+  background: #b9ff28;
+  color: #1d2c16;
+}
+
+.pickup-code-card small {
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .12em;
+}
+
+.pickup-code-card > strong {
+  margin-top: 4px;
+  font-size: 44px;
+  line-height: 1;
+  letter-spacing: .08em;
+}
+
+.pickup-code-card p {
+  margin: 11px 0 0;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.order-receipt {
+  padding: 22px;
+}
+
+.order-receipt__header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  padding-bottom: 17px;
+  border-bottom: 1px solid #eceee9;
+}
+
+.order-receipt__header > div {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.order-receipt__header small {
+  color: #949891;
+  font-size: 9px;
+  font-weight: 780;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.order-receipt__header strong {
+  font-size: 14px;
+}
+
+.order-receipt__header span {
+  overflow: hidden;
+  color: #7c8179;
+  font-size: 11px;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+}
+
+.order-receipt__line,
+.order-receipt__total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.order-receipt__line {
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f1ee;
+  font-size: 12px;
+}
+
+.order-receipt__line span {
+  color: #5f645d;
+}
+
+.order-receipt__line strong {
+  flex: 0 0 auto;
+  font-size: 12px;
+}
+
+.order-receipt__total {
+  padding-top: 18px;
+}
+
+.order-receipt__total span {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.order-receipt__total strong {
+  font-size: 24px;
+  letter-spacing: -.03em;
+}
+
+.order-status-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+
+.order-status-actions a,
+.order-status-actions button {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px;
+  border: 1px solid #e2e5df;
+  border-radius: 11px;
+  background: #fff;
+  color: #30352f;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 740;
+  text-decoration: none;
+}
+
+.order-status-actions button:hover,
+.order-status-actions a:hover {
+  border-color: #cbd0c7;
+  background: #f8f9f7;
+}
+
+.order-status-canceled {
+  margin-bottom: 16px;
+  padding: 22px;
+}
+
+.order-status-canceled strong {
+  font-size: 21px;
+}
+
+.order-status-canceled p {
+  margin: 6px 0 0;
+  color: #797e77;
+  font-size: 12px;
+}
+
+@media (max-width: 860px) {
+  .order-status-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .order-progress {
+    grid-template-columns: repeat(3, 1fr);
+    row-gap: 18px;
+  }
+
+  .order-progress li:nth-child(3)::after,
+  .order-progress li:last-child::after {
+    display: none;
+  }
+
+  .pickup-code-card {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .order-status-shell {
+    padding: 18px 14px 74px;
+  }
+
+  .order-status-hero {
+    padding: 22px 18px;
+    border-radius: 20px;
+  }
+
+  .order-status-hero h1 {
+    font-size: 34px;
+  }
+
+  .order-status-grid {
+    gap: 12px;
+  }
+
+  .order-progress {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .order-progress li {
+    display: grid;
+    grid-template-columns: 32px minmax(0,1fr);
+    gap: 10px;
+    align-items: start;
+    position: relative;
+    padding-bottom: 13px;
+  }
+
+  .order-progress li::after {
+    position: absolute;
+    left: 14px;
+    top: 31px;
+    width: 4px;
+    height: calc(100% - 28px);
+    margin: 0;
+  }
+
+  .order-progress li:nth-child(3)::after {
+    display: block;
+  }
+
+  .order-progress li:last-child::after {
+    display: none;
+  }
+
+  .order-receipt__header {
+    grid-template-columns: 1fr;
+  }
+}
