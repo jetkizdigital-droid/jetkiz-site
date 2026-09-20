@@ -31,7 +31,7 @@ test("renders production metadata", async () => {
   );
 
   const html = await response.text();
-  assert.match(html, /<title>JETKIZ — весь Щучинск в одном меню<\/title>/i);
+  assert.match(html, /<title>JETKIZ — доставка еды в Щучинске<\/title>/i);
   assert.match(
     html,
     /<meta(?=[^>]*\bname=["']description["'])(?=[^>]*\bcontent=["'][^"']*Рестораны Щучинска[^"']*["'])[^>]*>/i,
