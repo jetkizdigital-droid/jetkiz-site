@@ -88,6 +88,14 @@ function extractProfile(payload: unknown): Profile | null {
   return root as Profile;
 }
 
+function errorMessage(payload: unknown, fallback: string): string {
+  const root = asObject(payload);
+  const raw = root?.message ?? root?.error;
+  if (typeof raw === "string" && raw.trim()) return raw.trim();
+  if (Array.isArray(raw) && raw.length > 0) return String(raw[0]);
+  return fallback;
+}
+
 function statusLabel(status: string | undefined, ru: boolean) {
   const value = String(status ?? "").toUpperCase();
   const labels: Record<string, [string, string]> = {
@@ -192,8 +200,10 @@ export function AccountClient() {
       const payload = await readJson(response);
       if (!response.ok) {
         throw new Error(
-          asObject(payload)?.message?.toString() ||
-            (ru ? "Не удалось сохранить профиль." : "Профильді сақтау мүмкін болмады."),
+          errorMessage(
+            payload,
+            ru ? "Не удалось сохранить профиль." : "Профильді сақтау мүмкін болмады.",
+          ),
         );
       }
       const nextProfile = extractProfile(payload);
