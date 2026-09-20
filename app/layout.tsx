@@ -3,29 +3,49 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "./marketplace.css";
 import { LanguageProvider } from "./components/LanguageProvider";
+import { WebAuthProvider } from "./components/WebAuthProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
-  subsets: ["latin"],
+  subsets: ["latin", "cyrillic"],
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
-  subsets: ["latin"],
+  subsets: ["latin", "cyrillic"],
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://jetkiz.asia"),
   title: {
-    default: "JETKIZ — весь Щучинск в одном меню",
-    template: "%s",
+    default: "JETKIZ — доставка еды в Щучинске",
+    template: "%s | JETKIZ",
   },
   description:
-    "Рестораны Щучинска, знакомые блюда и местные курьеры — заказывайте еду онлайн по Щучинску и Бурабайскому району через сайт JETKIZ.",
-  themeColor: "#10140f",
+    "Доставка еды в Щучинске. Рестораны города, актуальные меню и цены, заказ онлайн и оплата картой через JETKIZ.",
+  applicationName: "JETKIZ",
+  keywords: [
+    "доставка еды Щучинск",
+    "заказать еду Щучинск",
+    "рестораны Щучинск",
+    "JETKIZ",
+    "доставка Бурабай",
+  ],
+  alternates: { canonical: "/restaurants" },
+  openGraph: {
+    type: "website",
+    locale: "ru_KZ",
+    siteName: "JETKIZ",
+    title: "JETKIZ — доставка еды в Щучинске",
+    description:
+      "Рестораны Щучинска, актуальные меню и цены. Заказ еды онлайн с доставкой или самовывозом.",
+    url: "https://jetkiz.asia/restaurants",
+  },
+  themeColor: "#ffffff",
   icons: {
-    icon: "/favicon.png",
-    shortcut: "/favicon.png",
+    icon: "/jetkiz-icon.svg",
+    shortcut: "/jetkiz-icon.svg",
+    apple: "/jetkiz-icon.svg",
   },
 };
 
@@ -36,10 +56,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <LanguageProvider>{children}</LanguageProvider>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <LanguageProvider>
+          <WebAuthProvider>{children}</WebAuthProvider>
+        </LanguageProvider>
       </body>
     </html>
   );
