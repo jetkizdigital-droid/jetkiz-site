@@ -4,7 +4,7 @@ import { getPublicRestaurants } from "./lib/jetkiz-api";
 import { RestaurantsCatalogClient } from "./restaurants/RestaurantsCatalogClient";
 
 export const metadata: Metadata = {
-  title: "JETKIZ — доставка еды в Щучинске",
+  title: { absolute: "JETKIZ — доставка еды в Щучинске" },
   description:
     "Доставка еды в Щучинске. Рестораны города, актуальные меню и цены, заказ онлайн и оплата картой через JETKIZ.",
   alternates: { canonical: "/restaurants" },
