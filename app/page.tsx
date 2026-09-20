@@ -6,7 +6,7 @@ import { RestaurantsCatalogClient } from "./restaurants/RestaurantsCatalogClient
 export const metadata: Metadata = {
   title: { absolute: "JETKIZ — доставка еды в Щучинске" },
   description:
-    "Доставка еды в Щучинске. Рестораны города, актуальные меню и цены, заказ онлайн и оплата картой через JETKIZ.",
+    "Доставка еды в Щучинске. Рестораны Щучинска, актуальные меню и цены, заказ онлайн и оплата картой через JETKIZ.",
   alternates: { canonical: "/restaurants" },
   openGraph: {
     title: "JETKIZ — доставка еды в Щучинске",
