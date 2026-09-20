@@ -5,98 +5,139 @@ import { useMemo, useState } from "react";
 import { useLanguage } from "../components/LanguageProvider";
 import { apiAssetUrl, restaurantPublicSlug, type PublicRestaurant } from "../lib/jetkiz-api";
 
+type Filter = "all" | "open" | "pickup";
+
 export function RestaurantsCatalogClient({ restaurants }: { restaurants: PublicRestaurant[] }) {
   const { lang } = useLanguage();
   const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState<Filter>("all");
   const ru = lang === "ru";
 
   const filtered = useMemo(() => {
     const normalized = query.trim().toLowerCase();
-    if (!normalized) return restaurants;
+
     return restaurants.filter((restaurant) => {
-      const values = [restaurant.nameRu, restaurant.nameKk, restaurant.address];
-      return values.some((value) => String(value ?? "").toLowerCase().includes(normalized));
+      const matchesQuery =
+        !normalized ||
+        [restaurant.nameRu, restaurant.nameKk, restaurant.address]
+          .some((value) => String(value ?? "").toLowerCase().includes(normalized));
+
+      const matchesFilter =
+        filter === "all" ||
+        (filter === "open" && restaurant.isOpenNow === true) ||
+        (filter === "pickup" && restaurant.isPickupEnabled === true);
+
+      return matchesQuery && matchesFilter;
     });
-  }, [query, restaurants]);
+  }, [query, filter, restaurants]);
 
   return (
-    <>
-      <section className="marketplace-hero">
-        <div className="marketplace-hero__copy">
-          <span className="kicker">JETKIZ · ЩУЧИНСК</span>
-          <h1>{ru ? "Рестораны Щучинска" : "Щучинск мейрамханалары"}</h1>
-          <p>
+    <div className="marketplace-page">
+      <section className="marketplace-intro">
+        <div>
+          <p className="marketplace-eyebrow">JETKIZ · ЩУЧИНСК</p>
+          <h1>{ru ? "Доставка еды в Щучинске" : "Щучинскіде тамақ жеткізу"}</h1>
+          <p className="marketplace-subtitle">
             {ru
-              ? "Реальные меню и актуальные цены загружаются из JETKIZ. Веб-оформление самовывоза сейчас работает в демонстрационном режиме и не отправляет заказ ресторану."
-              : "Нақты мәзірлер мен өзекті бағалар JETKIZ жүйесінен жүктеледі. Веб арқылы алып кетуді рәсімдеу қазір демонстрациялық режимде жұмыс істейді және тапсырысты мейрамханаға жібермейді."}
+              ? "Рестораны города, актуальные меню и цены. Заказывайте онлайн — быстро и без лишних экранов."
+              : "Қала мейрамханалары, өзекті мәзірлер мен бағалар. Онлайн тапсырыс беріңіз — тез әрі артық қадамсыз."}
           </p>
         </div>
-        <div className="marketplace-search">
-          <label htmlFor="restaurant-search">{ru ? "Найти ресторан" : "Мейрамхана табу"}</label>
-          <input
-            id="restaurant-search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder={ru ? "Название или адрес" : "Атауы немесе мекенжайы"}
-            autoComplete="off"
-          />
+        <div className="marketplace-city">
+          <span>{ru ? "Город" : "Қала"}</span>
+          <strong>Щучинск</strong>
         </div>
       </section>
 
-      <section className="restaurant-catalog section-pad" aria-live="polite">
-        <div className="restaurant-catalog__heading">
-          <div>
-            <span>{String(filtered.length).padStart(2, "0")}</span>
-            <h2>{ru ? "Доступные рестораны" : "Қолжетімді мейрамханалар"}</h2>
-          </div>
-          <p>
-            {ru
-              ? "Статус и график приходят напрямую из JETKIZ. Закрытый ресторан можно посмотреть, но реальный приём заказов зависит от его текущего режима."
-              : "Күйі мен жұмыс кестесі JETKIZ жүйесінен тікелей келеді. Жабық мейрамхананың мәзірін көруге болады, ал нақты тапсырыс қабылдау оның ағымдағы режиміне байланысты."}
-          </p>
+      <section className="marketplace-toolbar" aria-label={ru ? "Поиск и фильтры" : "Іздеу және сүзгілер"}>
+        <div className="marketplace-searchbox">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5" />
+            <path d="m16 16 4 4" />
+          </svg>
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder={ru ? "Найти ресторан" : "Мейрамхана табу"}
+            autoComplete="off"
+          />
+        </div>
+        <div className="marketplace-filters">
+          <button className={filter === "all" ? "is-active" : ""} onClick={() => setFilter("all")}>
+            {ru ? "Все" : "Барлығы"}
+          </button>
+          <button className={filter === "open" ? "is-active" : ""} onClick={() => setFilter("open")}>
+            {ru ? "Открыто сейчас" : "Қазір ашық"}
+          </button>
+          <button className={filter === "pickup" ? "is-active" : ""} onClick={() => setFilter("pickup")}>
+            {ru ? "Самовывоз" : "Алып кету"}
+          </button>
+        </div>
+      </section>
+
+      <section className="restaurant-catalog-compact" aria-live="polite">
+        <div className="restaurant-section-title">
+          <h2>{ru ? "Рестораны" : "Мейрамханалар"}</h2>
+          <span>{filtered.length}</span>
         </div>
 
         {filtered.length === 0 ? (
-          <div className="marketplace-empty">
-            <strong>{ru ? "Рестораны не найдены" : "Мейрамханалар табылмады"}</strong>
+          <div className="marketplace-empty marketplace-empty--compact">
+            <strong>{ru ? "Ничего не нашли" : "Ештеңе табылмады"}</strong>
             <p>
               {restaurants.length === 0
                 ? ru
-                  ? "Публичный список ресторанов сейчас недоступен. Попробуйте обновить страницу позже."
-                  : "Мейрамханалардың ашық тізімі қазір қолжетімсіз. Бетті кейінірек жаңартып көріңіз."
+                  ? "Список ресторанов сейчас недоступен. Обновите страницу чуть позже."
+                  : "Мейрамханалар тізімі қазір қолжетімсіз. Бетті сәл кейінірек жаңартыңыз."
                 : ru
-                  ? "Попробуйте другой запрос."
-                  : "Басқа сұрау енгізіп көріңіз."}
+                  ? "Попробуйте изменить запрос или фильтр."
+                  : "Сұрауды немесе сүзгіні өзгертіп көріңіз."}
             </p>
           </div>
         ) : (
-          <div className="restaurant-grid">
+          <div className="restaurant-grid-compact">
             {filtered.map((restaurant) => {
               const cover = apiAssetUrl(restaurant.coverImageUrl);
               const isOpen = restaurant.isOpenNow === true;
               const canAccept = restaurant.canAcceptOrders === true;
               const publicSlug = restaurantPublicSlug(restaurant);
+              const name = ru
+                ? restaurant.nameRu || restaurant.nameKk
+                : restaurant.nameKk || restaurant.nameRu;
+
               return (
-                <Link className="restaurant-card" href={`/restaurants/${publicSlug}`} key={restaurant.id}>
-                  <div className="restaurant-card__media">
-                    {cover ? <img src={cover} alt={restaurant.nameRu} loading="lazy" /> : <div className="restaurant-card__placeholder">JETKIZ</div>}
-                    <span className={isOpen ? "restaurant-state is-open" : "restaurant-state"}>
+                <Link className="restaurant-tile" href={`/restaurants/${publicSlug}`} key={restaurant.id}>
+                  <div className="restaurant-tile__media">
+                    {cover ? (
+                      <img src={cover} alt={name || "JETKIZ"} loading="lazy" />
+                    ) : (
+                      <div className="restaurant-tile__placeholder">
+                        <img src="/jetkiz-logo.svg" alt="" />
+                      </div>
+                    )}
+                    <span className={isOpen ? "restaurant-open-badge is-open" : "restaurant-open-badge"}>
                       {isOpen ? (ru ? "Открыто" : "Ашық") : ru ? "Закрыто" : "Жабық"}
                     </span>
                   </div>
-                  <div className="restaurant-card__body">
-                    <div className="restaurant-card__topline">
-                      <h3>{restaurant.nameRu || restaurant.nameKk}</h3>
+
+                  <div className="restaurant-tile__body">
+                    <div className="restaurant-tile__name-row">
+                      <h3>{name}</h3>
                       {Number(restaurant.ratingCount ?? 0) > 0 && (
-                        <span>★ {Number(restaurant.ratingAvg ?? 0).toFixed(1)}</span>
+                        <span className="restaurant-tile__rating">
+                          ★ {Number(restaurant.ratingAvg ?? 0).toFixed(1)}
+                        </span>
                       )}
                     </div>
                     <p>{restaurant.address || "Щучинск"}</p>
-                    <div className="restaurant-card__meta">
-                      <span>{restaurant.workingHours || (ru ? "График уточняется" : "Кесте нақтылануда")}</span>
-                      <span>{canAccept ? (ru ? "Принимает заказы" : "Тапсырыс қабылдайды") : ru ? "Меню доступно" : "Мәзір қолжетімді"}</span>
+                    <div className="restaurant-tile__meta">
+                      {restaurant.workingHours && <span>{restaurant.workingHours}</span>}
+                      <span>
+                        {canAccept
+                          ? ru ? "Принимает заказы" : "Тапсырыс қабылдайды"
+                          : ru ? "Меню доступно" : "Мәзір қолжетімді"}
+                      </span>
                     </div>
-                    <strong className="restaurant-card__action">{ru ? "Открыть меню →" : "Мәзірді ашу →"}</strong>
                   </div>
                 </Link>
               );
@@ -104,6 +145,6 @@ export function RestaurantsCatalogClient({ restaurants }: { restaurants: PublicR
           </div>
         )}
       </section>
-    </>
+    </div>
   );
 }

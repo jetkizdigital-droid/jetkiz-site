@@ -33,13 +33,13 @@ export function RestaurantMenuClient({
   const [cart, setCart] = useState<CartLine[]>([]);
   const [cartLoaded, setCartLoaded] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>("all");
-  const cartKey = `jetkiz-demo-cart:${restaurant.id}`;
+  const cartKey = `jetkiz-cart:${restaurant.id}`;
   const publicSlug = restaurantPublicSlug(restaurant);
 
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(cartKey);
-      setCart(raw ? JSON.parse(raw) as CartLine[] : []);
+      setCart(raw ? (JSON.parse(raw) as CartLine[]) : []);
     } catch {
       setCart([]);
     } finally {
@@ -52,34 +52,52 @@ export function RestaurantMenuClient({
     try {
       window.localStorage.setItem(cartKey, JSON.stringify(cart));
     } catch {
-      // Cart remains usable for the current tab even if storage is unavailable.
+      // Keep the in-memory cart if storage is unavailable.
     }
   }, [cart, cartKey, cartLoaded]);
 
   const categories = menu.categories ?? [];
   const items = menu.items ?? menu.products ?? [];
   const visibleItems = useMemo(
-    () => activeCategory === "all" ? items : items.filter((item) => item.categoryId === activeCategory),
+    () =>
+      activeCategory === "all"
+        ? items
+        : items.filter((item) => item.categoryId === activeCategory),
     [activeCategory, items],
   );
 
   const totalCount = cart.reduce((sum, line) => sum + line.quantity, 0);
-  const totalPrice = cart.reduce((sum, line) => sum + line.price * line.quantity, 0);
+  const totalPrice = cart.reduce(
+    (sum, line) => sum + line.price * line.quantity,
+    0,
+  );
   const cover = apiAssetUrl(restaurant.coverImageUrl);
   const description = ru
     ? restaurant.descriptionRu || restaurant.descriptionKk
     : restaurant.descriptionKk || restaurant.descriptionRu;
 
-  const quantityFor = (productId: string) => cart.find((line) => line.productId === productId)?.quantity ?? 0;
+  const quantityFor = (productId: string) =>
+    cart.find((line) => line.productId === productId)?.quantity ?? 0;
 
   const changeQuantity = (item: PublicMenuItem, delta: number) => {
+    if (!item.isAvailable) return;
+
     setCart((current) => {
       const existing = current.find((line) => line.productId === item.id);
       const nextQuantity = Math.max(0, (existing?.quantity ?? 0) + delta);
-      if (nextQuantity === 0) return current.filter((line) => line.productId !== item.id);
-      if (existing) {
-        return current.map((line) => line.productId === item.id ? { ...line, quantity: nextQuantity, price: item.price } : line);
+
+      if (nextQuantity === 0) {
+        return current.filter((line) => line.productId !== item.id);
       }
+
+      if (existing) {
+        return current.map((line) =>
+          line.productId === item.id
+            ? { ...line, quantity: nextQuantity, price: item.price }
+            : line,
+        );
+      }
+
       return [
         ...current,
         {
@@ -94,46 +112,66 @@ export function RestaurantMenuClient({
     });
   };
 
+  const changeCartLine = (line: CartLine, delta: number) => {
+    const item = items.find((candidate) => candidate.id === line.productId);
+    if (item) changeQuantity(item, delta);
+  };
+
+  const restaurantName = ru
+    ? restaurant.nameRu || restaurant.nameKk
+    : restaurant.nameKk || restaurant.nameRu;
+
   return (
-    <>
-      <section className="restaurant-profile">
-        <div className="restaurant-profile__cover">
-          {cover ? <img src={cover} alt={restaurant.nameRu} /> : <div className="restaurant-profile__placeholder">JETKIZ</div>}
-          <div className="restaurant-profile__shade" />
+    <div className="restaurant-marketplace-page">
+      <section className="restaurant-summary">
+        <div className="restaurant-summary__media">
+          {cover ? (
+            <img src={cover} alt={restaurantName || "JETKIZ"} />
+          ) : (
+            <div className="restaurant-summary__placeholder">
+              <img src="/jetkiz-logo.svg" alt="" />
+            </div>
+          )}
         </div>
-        <div className="restaurant-profile__content">
-          <Link className="restaurant-back" href="/restaurants">← {ru ? "Все рестораны" : "Барлық мейрамханалар"}</Link>
-          <div className="restaurant-profile__status-row">
-            <span className={restaurant.isOpenNow ? "restaurant-state is-open" : "restaurant-state"}>
-              {restaurant.isOpenNow ? (ru ? "Открыто" : "Ашық") : ru ? "Закрыто" : "Жабық"}
+        <div className="restaurant-summary__content">
+          <Link className="restaurant-back-compact" href="/restaurants">
+            ← {ru ? "Все рестораны" : "Барлық мейрамханалар"}
+          </Link>
+          <div className="restaurant-summary__title-row">
+            <div>
+              <h1>{restaurantName}</h1>
+              <p>{restaurant.address || "Щучинск"}</p>
+            </div>
+            {Number(restaurant.ratingCount ?? 0) > 0 && (
+              <span className="restaurant-summary__rating">
+                ★ {Number(restaurant.ratingAvg ?? 0).toFixed(1)}
+              </span>
+            )}
+          </div>
+          <div className="restaurant-summary__badges">
+            <span className={restaurant.isOpenNow ? "is-open" : ""}>
+              {restaurant.isOpenNow
+                ? ru ? "Открыто" : "Ашық"
+                : ru ? "Закрыто" : "Жабық"}
             </span>
-            {Number(restaurant.ratingCount ?? 0) > 0 && <span className="restaurant-rating">★ {Number(restaurant.ratingAvg ?? 0).toFixed(1)} · {restaurant.ratingCount}</span>}
+            {restaurant.workingHours && <span>{restaurant.workingHours}</span>}
+            {restaurant.isPickupEnabled && (
+              <span>{ru ? "Самовывоз" : "Алып кету"}</span>
+            )}
           </div>
-          <h1>{restaurant.nameRu || restaurant.nameKk}</h1>
-          {description && <p className="restaurant-profile__description">{description}</p>}
-          <div className="restaurant-profile__facts">
-            <span><small>{ru ? "Адрес" : "Мекенжай"}</small>{restaurant.address || "Щучинск"}</span>
-            <span><small>{ru ? "График" : "Кесте"}</small>{restaurant.workingHours || (ru ? "Уточняется" : "Нақтылануда")}</span>
-            <span><small>{ru ? "Получение" : "Алу тәсілі"}</small>{ru ? "Самовывоз" : "Алып кету"}</span>
-          </div>
+          {description && <p className="restaurant-summary__description">{description}</p>}
         </div>
       </section>
 
-      <section className="menu-shell section-pad">
-        <div className="menu-heading">
-          <div>
-            <span className="kicker">JETKIZ MENU</span>
-            <h2>{ru ? "Меню" : "Мәзір"}</h2>
-          </div>
-          <p>
-            {restaurant.canAcceptOrders
-              ? ru ? "Ресторан сейчас принимает заказы. На сайте доступен демонстрационный сценарий самовывоза." : "Мейрамхана қазір тапсырыс қабылдайды. Сайтта алып кетудің демонстрациялық сценарийі қолжетімді."
-              : ru ? "Сейчас ресторан не принимает реальные заказы, но меню и демонстрационное оформление доступны." : "Қазір мейрамхана нақты тапсырыс қабылдамайды, бірақ мәзір мен демонстрациялық рәсімдеу қолжетімді."}
-          </p>
-        </div>
-
-        <div className="menu-categories" role="tablist" aria-label={ru ? "Категории меню" : "Мәзір санаттары"}>
-          <button className={activeCategory === "all" ? "is-active" : ""} onClick={() => setActiveCategory("all")}>{ru ? "Все" : "Барлығы"}</button>
+      <section className="menu-marketplace-layout">
+        <aside className="menu-sidebar" aria-label={ru ? "Категории" : "Санаттар"}>
+          <strong>{ru ? "Меню" : "Мәзір"}</strong>
+          <button
+            className={activeCategory === "all" ? "is-active" : ""}
+            onClick={() => setActiveCategory("all")}
+          >
+            {ru ? "Все" : "Барлығы"}
+          </button>
           {categories.map((category) => (
             <button
               key={category.id}
@@ -143,53 +181,151 @@ export function RestaurantMenuClient({
               {ru ? category.titleRu : category.titleKk || category.titleRu}
             </button>
           ))}
-        </div>
+        </aside>
 
-        {visibleItems.length === 0 ? (
-          <div className="marketplace-empty"><strong>{ru ? "В этой категории пока пусто" : "Бұл санат әзірге бос"}</strong></div>
-        ) : (
-          <div className="menu-grid">
-            {visibleItems.map((item) => {
-              const quantity = quantityFor(item.id);
-              const image = apiAssetUrl(item.imageUrl);
-              const title = ru ? item.titleRu : item.titleKk || item.titleRu;
-              return (
-                <article className="menu-card" key={item.id}>
-                  <div className="menu-card__media">
-                    {image ? <img src={image} alt={title} loading="lazy" /> : <div className="menu-card__placeholder">JETKIZ</div>}
-                  </div>
-                  <div className="menu-card__body">
-                    <div>
-                      <h3>{title}</h3>
-                      {(item.description || item.composition) && <p>{item.description || item.composition}</p>}
-                      {item.weight && <small>{item.weight}</small>}
-                    </div>
-                    <div className="menu-card__bottom">
-                      <strong>{formatKzt(item.price)}</strong>
-                      {quantity === 0 ? (
-                        <button onClick={() => changeQuantity(item, 1)} aria-label={`${ru ? "Добавить" : "Қосу"} ${title}`}>+</button>
+        <div className="menu-products-column">
+          <div className="menu-products-heading">
+            <h2>
+              {activeCategory === "all"
+                ? ru ? "Все блюда" : "Барлық тағамдар"
+                : ru
+                  ? categories.find((category) => category.id === activeCategory)?.titleRu
+                  : categories.find((category) => category.id === activeCategory)?.titleKk ||
+                    categories.find((category) => category.id === activeCategory)?.titleRu}
+            </h2>
+            <span>{visibleItems.length}</span>
+          </div>
+
+          <div className="menu-mobile-categories" role="tablist">
+            <button
+              className={activeCategory === "all" ? "is-active" : ""}
+              onClick={() => setActiveCategory("all")}
+            >
+              {ru ? "Все" : "Барлығы"}
+            </button>
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                className={activeCategory === category.id ? "is-active" : ""}
+                onClick={() => setActiveCategory(category.id)}
+              >
+                {ru ? category.titleRu : category.titleKk || category.titleRu}
+              </button>
+            ))}
+          </div>
+
+          {visibleItems.length === 0 ? (
+            <div className="marketplace-empty marketplace-empty--compact">
+              <strong>{ru ? "В этой категории пока пусто" : "Бұл санат әзірге бос"}</strong>
+            </div>
+          ) : (
+            <div className="menu-grid-compact">
+              {visibleItems.map((item) => {
+                const quantity = quantityFor(item.id);
+                const image = apiAssetUrl(item.imageUrl);
+                const title = ru ? item.titleRu : item.titleKk || item.titleRu;
+                const subtitle = item.weight || item.description || item.composition;
+
+                return (
+                  <article className={item.isAvailable ? "menu-product-card" : "menu-product-card is-unavailable"} key={item.id}>
+                    <div className="menu-product-card__image">
+                      {image ? (
+                        <img src={image} alt={title} loading="lazy" />
                       ) : (
-                        <div className="quantity-control">
-                          <button onClick={() => changeQuantity(item, -1)} aria-label={ru ? "Уменьшить" : "Азайту"}>−</button>
-                          <span>{quantity}</span>
-                          <button onClick={() => changeQuantity(item, 1)} aria-label={ru ? "Добавить" : "Қосу"}>+</button>
+                        <div className="menu-product-card__placeholder">
+                          <img src="/jetkiz-logo.svg" alt="" />
                         </div>
                       )}
                     </div>
-                  </div>
-                </article>
-              );
-            })}
+                    <div className="menu-product-card__body">
+                      <strong className="menu-product-card__price">{formatKzt(item.price)}</strong>
+                      <h3>{title}</h3>
+                      {subtitle && <p>{subtitle}</p>}
+                      {!item.isAvailable ? (
+                        <button className="menu-product-card__disabled" disabled>
+                          {ru ? "Нет в наличии" : "Қолжетімсіз"}
+                        </button>
+                      ) : quantity === 0 ? (
+                        <button className="menu-product-card__add" onClick={() => changeQuantity(item, 1)}>
+                          + {ru ? "Добавить" : "Қосу"}
+                        </button>
+                      ) : (
+                        <div className="menu-product-card__qty">
+                          <button onClick={() => changeQuantity(item, -1)}>−</button>
+                          <span>{quantity}</span>
+                          <button onClick={() => changeQuantity(item, 1)}>+</button>
+                        </div>
+                      )}
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        <aside className="menu-cart">
+          <div className="menu-cart__head">
+            <h2>{ru ? "Корзина" : "Себет"}</h2>
+            {totalCount > 0 && <span>{totalCount}</span>}
           </div>
-        )}
+
+          {cart.length === 0 ? (
+            <div className="menu-cart__empty">
+              <div>+</div>
+              <strong>{ru ? "Корзина пока пуста" : "Себет әзірге бос"}</strong>
+              <p>{ru ? "Добавьте блюда из меню" : "Мәзірден тағам қосыңыз"}</p>
+            </div>
+          ) : (
+            <>
+              <div className="menu-cart__lines">
+                {cart.map((line) => (
+                  <div className="menu-cart__line" key={line.productId}>
+                    <div>
+                      <strong>{ru ? line.titleRu : line.titleKk || line.titleRu}</strong>
+                      <span>{formatKzt(line.price * line.quantity)}</span>
+                    </div>
+                    <div className="menu-cart__line-qty">
+                      <button onClick={() => changeCartLine(line, -1)}>−</button>
+                      <span>{line.quantity}</span>
+                      <button onClick={() => changeCartLine(line, 1)}>+</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="menu-cart__total">
+                <span>{ru ? "Итого" : "Барлығы"}</span>
+                <strong>{formatKzt(totalPrice)}</strong>
+              </div>
+
+              {restaurant.canAcceptOrders ? (
+                <Link className="menu-cart__checkout" href={`/restaurants/${publicSlug}/checkout`}>
+                  {ru ? "Перейти к оформлению" : "Рәсімдеуге өту"}
+                </Link>
+              ) : (
+                <button className="menu-cart__checkout is-disabled" disabled>
+                  {ru ? "Ресторан не принимает заказы" : "Мейрамхана тапсырыс қабылдамайды"}
+                </button>
+              )}
+            </>
+          )}
+        </aside>
       </section>
 
       {totalCount > 0 && (
         <div className="mobile-cart-bar">
-          <div><small>{totalCount} {ru ? "поз." : "позиция"}</small><strong>{formatKzt(totalPrice)}</strong></div>
-          <Link href={`/restaurants/${publicSlug}/checkout`}>{ru ? "Корзина" : "Себет"} →</Link>
+          <div>
+            <small>{totalCount} {ru ? "поз." : "позиция"}</small>
+            <strong>{formatKzt(totalPrice)}</strong>
+          </div>
+          {restaurant.canAcceptOrders ? (
+            <Link href={`/restaurants/${publicSlug}/checkout`}>{ru ? "Корзина" : "Себет"} →</Link>
+          ) : (
+            <span>{ru ? "Закрыто" : "Жабық"}</span>
+          )}
         </div>
       )}
-    </>
+    </div>
   );
 }

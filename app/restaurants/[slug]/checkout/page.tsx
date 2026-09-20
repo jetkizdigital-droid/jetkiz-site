@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageShell, SiteFooter, SiteHeader } from "../../../components/SiteChrome";
 import { getPublicRestaurantBySlug } from "../../../lib/jetkiz-api";
-import { DemoCheckoutClient } from "./DemoCheckoutClient";
+import { CheckoutClient } from "./CheckoutClient";
 
 export const metadata: Metadata = {
-  title: "Оформление самовывоза — JETKIZ",
+  title: "Оформление заказа",
   robots: { index: false, follow: false },
 };
 
@@ -19,7 +19,7 @@ export default async function CheckoutPage({ params }: PageProps) {
   return (
     <PageShell>
       <SiteHeader current="catalog" />
-      <DemoCheckoutClient restaurant={restaurant} />
+      <CheckoutClient restaurant={restaurant} />
       <SiteFooter />
     </PageShell>
   );
