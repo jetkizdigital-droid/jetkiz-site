@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { PageShell, SiteFooter, SiteHeader } from "../../components/SiteChrome";
-import { DemoOrderStatusClient } from "./DemoOrderStatusClient";
+import { OrderStatusClient } from "./DemoOrderStatusClient";
 
 export const metadata: Metadata = {
   title: "Статус заказа — JETKIZ",
@@ -9,12 +9,12 @@ export const metadata: Metadata = {
 
 type PageProps = { params: Promise<{ id: string }> };
 
-export default async function DemoOrderPage({ params }: PageProps) {
+export default async function OrderPage({ params }: PageProps) {
   const { id } = await params;
   return (
     <PageShell>
       <SiteHeader current="catalog" />
-      <DemoOrderStatusClient id={decodeURIComponent(id)} />
+      <OrderStatusClient id={decodeURIComponent(id)} />
       <SiteFooter />
     </PageShell>
   );
