@@ -2294,3 +2294,113 @@ body {
     font-size: 24px;
   }
 }
+
+
+/* production payment return + real order status */
+.payment-return-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  background: #f5f6f2;
+  color: #11140f;
+}
+.payment-return-card {
+  width: min(100%, 520px);
+  padding: 34px;
+  border: 1px solid #e1e5dc;
+  border-radius: 28px;
+  background: #fff;
+  box-shadow: 0 24px 80px rgba(17,20,15,.08);
+}
+.payment-return-card > img {
+  width: 118px;
+  height: auto;
+  display: block;
+  margin-bottom: 28px;
+}
+.payment-return-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 11px;
+  border-radius: 999px;
+  background: #eef1ea;
+  color: #677064;
+  font-size: 11px;
+  font-weight: 800;
+}
+.payment-return-status.is-success { background: #c8ff34; color: #10140f; }
+.payment-return-status.is-failure { background: #ffe7dd; color: #9d3f23; }
+.payment-return-card h1 {
+  margin: 17px 0 10px;
+  font-size: clamp(38px, 7vw, 60px);
+  line-height: .9;
+  letter-spacing: -.06em;
+}
+.payment-return-card p {
+  margin: 0;
+  color: #697066;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.payment-return-actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 28px;
+}
+.payment-return-primary,
+.payment-return-secondary {
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 820;
+  text-decoration: none;
+}
+.payment-return-primary { background: #c8ff34; color: #10140f; }
+.payment-return-secondary { border: 1px solid #dde2d9; color: #31362f; background: #fff; }
+
+.order-status-updated {
+  display: block;
+  margin-top: 12px;
+  color: rgba(255,255,255,.42);
+  font-size: 10px;
+  letter-spacing: .04em;
+}
+.order-status-canceled {
+  max-width: 900px;
+  padding: 28px;
+  border-radius: 22px;
+  background: #fff;
+  color: #10140f;
+}
+.order-status-canceled strong {
+  display: block;
+  font-size: 26px;
+  letter-spacing: -.04em;
+}
+.order-status-canceled p {
+  margin: 9px 0 0;
+  color: #697066;
+  line-height: 1.55;
+}
+.order-status-actions button {
+  padding: 12px 15px;
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(255,255,255,.78);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 760;
+}
+
+@media (max-width: 640px) {
+  .payment-return-page { padding: 16px; }
+  .payment-return-card { padding: 25px 21px; border-radius: 22px; }
+  .payment-return-card > img { width: 100px; }
+}
