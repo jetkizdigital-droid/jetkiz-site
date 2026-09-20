@@ -427,8 +427,8 @@ export function CheckoutClient({ restaurant }: { restaurant: PublicRestaurant })
           <h1>{ru ? "Оформление заказа" : "Тапсырысты рәсімдеу"}</h1>
           <p>
             {ru
-              ? "Заказ создаётся в JETKIZ и после этого открывается защищённая страница оплаты PayLink."
-              : "Тапсырыс JETKIZ жүйесінде жасалады, содан кейін қауіпсіз PayLink төлем беті ашылады."}
+              ? "Проверьте заказ, выберите способ оплаты и завершите оплату картой."
+              : "Тапсырысты тексеріп, төлем тәсілін таңдап, картамен төлемді аяқтаңыз."}
           </p>
         </div>
 
@@ -580,7 +580,7 @@ export function CheckoutClient({ restaurant }: { restaurant: PublicRestaurant })
               <span className="checkout-card-brand">＋</span>
               <span>
                 <strong>{ru ? "Новая карта" : "Жаңа карта"}</strong>
-                <small>{ru ? "Добавить через PayLink" : "PayLink арқылы қосу"}</small>
+                <small>{ru ? "Добавить новую карту" : "Жаңа карта қосу"}</small>
               </span>
               <i />
             </button>
@@ -596,8 +596,8 @@ export function CheckoutClient({ restaurant }: { restaurant: PublicRestaurant })
           <div className="checkout-payment-note checkout-payment-note--inline">
             <div className="checkout-payment-icon">••••</div>
             <div>
-              <strong>{ru ? "Безопасная оплата через PayLink" : "PayLink арқылы қауіпсіз төлем"}</strong>
-              <p>{ru ? "JETKIZ не получает и не хранит PAN/CVV." : "JETKIZ PAN/CVV деректерін алмайды және сақтамайды."}</p>
+              <strong>{ru ? "Оплата картой" : "Картамен төлеу"}</strong>
+              <p>{ru ? "Данные карты защищены и не отображаются в JETKIZ." : "Карта деректері қорғалған және JETKIZ ішінде көрсетілмейді."}</p>
             </div>
           </div>
         </div>
