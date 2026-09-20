@@ -31,6 +31,14 @@ type Address = {
   door?: string | null;
 };
 
+type SavedPaymentMethod = {
+  id: string;
+  brand?: string | null;
+  last4?: string | null;
+  issuerBank?: string | null;
+  isDefault?: boolean;
+};
+
 type Fulfillment = "DELIVERY" | "PICKUP";
 
 function apiHeaders(extra?: Record<string, string>) {
@@ -74,7 +82,7 @@ function list<T>(payload: unknown): T[] {
   if (Array.isArray(payload)) return payload as T[];
   const root = object(payload);
   if (!root) return [];
-  for (const key of ["items", "addresses", "data", "result"]) {
+  for (const key of ["items", "addresses", "methods", "data", "result"]) {
     const value = root[key];
     if (Array.isArray(value)) return value as T[];
     const nested = object(value);
@@ -130,6 +138,9 @@ export function CheckoutClient({ restaurant }: { restaurant: PublicRestaurant })
   const [busy, setBusy] = useState(false);
   const [createdOrderId, setCreatedOrderId] = useState("");
   const [error, setError] = useState("");
+  const [paymentMethods, setPaymentMethods] = useState<SavedPaymentMethod[]>([]);
+  const [paymentMethodId, setPaymentMethodId] = useState("new");
+  const [saveNewCard, setSaveNewCard] = useState(true);
 
   useEffect(() => {
     try {
@@ -174,6 +185,39 @@ export function CheckoutClient({ restaurant }: { restaurant: PublicRestaurant })
       cancelled = true;
     };
   }, [user, addressId]);
+
+  useEffect(() => {
+    if (!user) {
+      setPaymentMethods([]);
+      setPaymentMethodId("new");
+      return;
+    }
+
+    let cancelled = false;
+    void fetch(`${API_BASE_URL}/payments/methods`, {
+      headers: apiHeaders(),
+      credentials: "include",
+      cache: "no-store",
+    })
+      .then(async (response) => {
+        const payload = await json(response);
+        if (!response.ok || cancelled) return;
+        const next = list<SavedPaymentMethod>(payload);
+        setPaymentMethods(next);
+        const preferred = next.find((method) => method.isDefault) ?? next[0];
+        setPaymentMethodId(preferred?.id || "new");
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setPaymentMethods([]);
+          setPaymentMethodId("new");
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   useEffect(() => {
     if (!restaurant.isPickupEnabled && fulfillment === "PICKUP") {
@@ -231,11 +275,17 @@ export function CheckoutClient({ restaurant }: { restaurant: PublicRestaurant })
   };
 
   const startPayment = async (orderId: string) => {
+    const useNewCard = paymentMethodId === "new";
     const paymentResponse = await fetch(`${API_BASE_URL}/payments`, {
       method: "POST",
       headers: apiHeaders(),
       credentials: "include",
-      body: JSON.stringify({ orderId }),
+      body: JSON.stringify({
+        orderId,
+        ...(useNewCard
+          ? { saveCard: saveNewCard }
+          : { savedPaymentMethodId: paymentMethodId }),
+      }),
     });
 
     const paymentPayload = await json(paymentResponse);
@@ -497,15 +547,58 @@ export function CheckoutClient({ restaurant }: { restaurant: PublicRestaurant })
           </label>
         </div>
 
-        <div className="checkout-payment-note">
-          <div className="checkout-payment-icon">••••</div>
-          <div>
-            <strong>{ru ? "Оплата картой" : "Картамен төлеу"}</strong>
-            <p>
-              {ru
-                ? "Данные карты вводятся на защищённой странице PayLink. JETKIZ не получает PAN/CVV."
-                : "Карта деректері қорғалған PayLink бетінде енгізіледі. JETKIZ PAN/CVV алмайды."}
-            </p>
+        <div className="checkout-section checkout-payment-methods">
+          <div className="checkout-section__head">
+            <div>
+              <h2>{ru ? "Способ оплаты" : "Төлем тәсілі"}</h2>
+              <p>{ru ? "Выберите сохранённую карту или добавьте новую." : "Сақталған картаны таңдаңыз немесе жаңасын қосыңыз."}</p>
+            </div>
+          </div>
+
+          <div className="checkout-card-options">
+            {paymentMethods.map((method) => (
+              <button
+                type="button"
+                key={method.id}
+                className={paymentMethodId === method.id ? "is-active" : ""}
+                onClick={() => setPaymentMethodId(method.id)}
+              >
+                <span className="checkout-card-brand">{String(method.brand || "CARD").toUpperCase()}</span>
+                <span>
+                  <strong>•••• {method.last4 || "••••"}</strong>
+                  <small>{method.issuerBank || (method.isDefault ? (ru ? "Основная карта" : "Негізгі карта") : (ru ? "Сохранённая карта" : "Сақталған карта"))}</small>
+                </span>
+                <i />
+              </button>
+            ))}
+
+            <button
+              type="button"
+              className={paymentMethodId === "new" ? "is-active checkout-card-option--new" : "checkout-card-option--new"}
+              onClick={() => setPaymentMethodId("new")}
+            >
+              <span className="checkout-card-brand">＋</span>
+              <span>
+                <strong>{ru ? "Новая карта" : "Жаңа карта"}</strong>
+                <small>{ru ? "Добавить через PayLink" : "PayLink арқылы қосу"}</small>
+              </span>
+              <i />
+            </button>
+          </div>
+
+          {paymentMethodId === "new" && (
+            <label className="checkout-checkbox checkout-save-card">
+              <input type="checkbox" checked={saveNewCard} onChange={(event) => setSaveNewCard(event.target.checked)} />
+              <span>{ru ? "Сохранить карту для следующих заказов" : "Картаны келесі тапсырыстар үшін сақтау"}</span>
+            </label>
+          )}
+
+          <div className="checkout-payment-note checkout-payment-note--inline">
+            <div className="checkout-payment-icon">••••</div>
+            <div>
+              <strong>{ru ? "Безопасная оплата через PayLink" : "PayLink арқылы қауіпсіз төлем"}</strong>
+              <p>{ru ? "JETKIZ не получает и не хранит PAN/CVV." : "JETKIZ PAN/CVV деректерін алмайды және сақтамайды."}</p>
+            </div>
           </div>
         </div>
 

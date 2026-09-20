@@ -43,9 +43,12 @@ export const metadata: Metadata = {
   },
   themeColor: "#ffffff",
   icons: {
-    icon: "/jetkiz-icon.svg",
-    shortcut: "/jetkiz-icon.svg",
-    apple: "/jetkiz-icon.svg",
+    icon: [
+      { url: "/favicon.png", type: "image/png", sizes: "96x96" },
+      { url: "/jetkiz-icon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
   },
 };
 
