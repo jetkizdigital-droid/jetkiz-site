@@ -395,7 +395,7 @@ export function AccountClient() {
               ))}
               {!paymentMethods.length && <p className="account-muted">{ru ? "Сохранённых карт пока нет. Новую карту можно сохранить при оплате заказа." : "Сақталған карталар жоқ. Жаңа картаны тапсырыс төлеу кезінде сақтауға болады."}</p>}
             </div>
-            <p className="account-card-note">{ru ? "Новая карта добавляется безопасно через PayLink при следующей оплате." : "Жаңа карта келесі төлемде PayLink арқылы қауіпсіз қосылады."}</p>
+            <p className="account-card-note">{ru ? "Новую карту можно добавить и сохранить при следующей оплате." : "Жаңа картаны келесі төлем кезінде қосып, сақтауға болады."}</p>
           </article>
 
           <article className="account-card account-card--compact account-profile-compact">
