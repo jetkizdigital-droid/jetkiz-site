@@ -4,6 +4,8 @@ export type PublicRestaurant = {
   id: string;
   number?: number;
   slug: string;
+  /** Clean website slug derived from the restaurant name. */
+  publicSlug?: string;
   nameRu: string;
   nameKk?: string | null;
   phone?: string | null;
@@ -85,7 +87,7 @@ async function apiFetch<T>(path: string): Promise<T> {
 export async function getPublicRestaurants(): Promise<PublicRestaurant[]> {
   try {
     const payload = await apiFetch<{ items?: PublicRestaurant[] }>("/restaurants/public/all");
-    return Array.isArray(payload.items) ? payload.items : [];
+    return Array.isArray(payload.items) ? assignRestaurantPublicSlugs(payload.items) : [];
   } catch (error) {
     console.error("Failed to load public restaurants", error);
     return [];
@@ -95,17 +97,28 @@ export async function getPublicRestaurants(): Promise<PublicRestaurant[]> {
 export async function getPublicRestaurantBySlug(slug: string): Promise<PublicRestaurant | null> {
   const normalized = decodeURIComponent(slug).trim().toLowerCase();
   const restaurants = await getPublicRestaurants();
-  const publicNumber = normalized.match(/-r(\d+)$/)?.[1];
 
-  if (publicNumber) {
-    const number = Number(publicNumber);
-    const byNumber = restaurants.find((restaurant) => Number(restaurant.number) === number);
+  const byPublicSlug = restaurants.find(
+    (restaurant) => restaurantPublicSlug(restaurant) === normalized,
+  );
+  if (byPublicSlug) return byPublicSlug;
+
+  // Backward compatibility for links published before clean restaurant URLs.
+  const legacyPublicNumber = normalized.match(/-r(\d+)$/)?.[1];
+  if (legacyPublicNumber) {
+    const number = Number(legacyPublicNumber);
+    const byNumber = restaurants.find(
+      (restaurant) => Number(restaurant.number) === number,
+    );
     if (byNumber) return byNumber;
   }
 
-  return restaurants.find((restaurant) =>
-    restaurant.slug?.toLowerCase() === normalized || restaurantPublicSlug(restaurant) === normalized,
-  ) ?? null;
+  // Keep old backend slugs resolvable as aliases as well.
+  return (
+    restaurants.find(
+      (restaurant) => restaurant.slug?.toLowerCase() === normalized,
+    ) ?? null
+  );
 }
 
 export async function getPublicMenu(restaurantId: string): Promise<PublicMenu | null> {
@@ -117,11 +130,80 @@ export async function getPublicMenu(restaurantId: string): Promise<PublicMenu | 
   }
 }
 
-export function restaurantPublicSlug(restaurant: Pick<PublicRestaurant, "number" | "nameRu" | "slug">): string {
-  const brand = latinSlug(restaurant.nameRu) || "restaurant";
-  const number = Number(restaurant.number);
-  if (Number.isInteger(number) && number > 0) return `${brand}-r${number}`;
-  return restaurant.slug;
+export function restaurantPublicSlug(
+  restaurant: Pick<PublicRestaurant, "publicSlug" | "nameRu" | "slug">,
+): string {
+  return (
+    restaurant.publicSlug ||
+    latinSlug(restaurant.nameRu) ||
+    latinSlug(restaurant.slug) ||
+    "restaurant"
+  );
+}
+
+function assignRestaurantPublicSlugs(
+  restaurants: PublicRestaurant[],
+): PublicRestaurant[] {
+  const baseById = new Map<string, string>();
+  const reservedBases = new Set<string>();
+
+  for (const restaurant of restaurants) {
+    const base =
+      latinSlug(restaurant.nameRu) ||
+      latinSlug(restaurant.slug) ||
+      "restaurant";
+    baseById.set(restaurant.id, base);
+    reservedBases.add(base);
+  }
+
+  const groups = new Map<string, PublicRestaurant[]>();
+  for (const restaurant of restaurants) {
+    const base = baseById.get(restaurant.id) || "restaurant";
+    const group = groups.get(base) || [];
+    group.push(restaurant);
+    groups.set(base, group);
+  }
+
+  const publicSlugById = new Map<string, string>();
+  const used = new Set<string>();
+
+  for (const [base, group] of groups) {
+    const ordered = [...group].sort((left, right) => {
+      const leftNumber = Number(left.number);
+      const rightNumber = Number(right.number);
+      const leftHasNumber = Number.isInteger(leftNumber) && leftNumber > 0;
+      const rightHasNumber = Number.isInteger(rightNumber) && rightNumber > 0;
+
+      if (leftHasNumber && rightHasNumber && leftNumber !== rightNumber) {
+        return leftNumber - rightNumber;
+      }
+      if (leftHasNumber !== rightHasNumber) return leftHasNumber ? -1 : 1;
+      return left.id.localeCompare(right.id);
+    });
+
+    ordered.forEach((restaurant, index) => {
+      if (index === 0 && !used.has(base)) {
+        publicSlugById.set(restaurant.id, base);
+        used.add(base);
+        return;
+      }
+
+      let suffix = 2;
+      let candidate = `${base}-${suffix}`;
+      while (used.has(candidate) || reservedBases.has(candidate)) {
+        suffix += 1;
+        candidate = `${base}-${suffix}`;
+      }
+
+      publicSlugById.set(restaurant.id, candidate);
+      used.add(candidate);
+    });
+  }
+
+  return restaurants.map((restaurant) => ({
+    ...restaurant,
+    publicSlug: publicSlugById.get(restaurant.id) || "restaurant",
+  }));
 }
 
 function latinSlug(value: string): string {
