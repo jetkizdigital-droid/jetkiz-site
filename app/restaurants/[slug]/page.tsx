@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { PageShell, SiteFooter, SiteHeader } from "../../components/SiteChrome";
 import { apiAssetUrl, getPublicMenu, getPublicRestaurantBySlug, restaurantPublicSlug } from "../../lib/jetkiz-api";
 import { RestaurantMenuClient } from "./RestaurantMenuClient";
@@ -34,11 +34,16 @@ export default async function RestaurantPage({ params }: PageProps) {
   const restaurant = await getPublicRestaurantBySlug(slug);
   if (!restaurant) notFound();
 
+  const publicSlug = restaurantPublicSlug(restaurant);
+  const requestedSlug = decodeURIComponent(slug).trim().toLowerCase();
+  if (requestedSlug !== publicSlug) {
+    redirect(`/restaurants/${publicSlug}`);
+  }
+
   const menu = await getPublicMenu(restaurant.id);
   if (!menu) notFound();
 
   const mergedRestaurant = { ...restaurant, ...menu.restaurant };
-  const publicSlug = restaurantPublicSlug(mergedRestaurant);
   const canonicalUrl = `https://jetkiz.asia/restaurants/${publicSlug}`;
   const cover = apiAssetUrl(mergedRestaurant.coverImageUrl);
   const ratingCount = Number(mergedRestaurant.ratingCount ?? 0);
