@@ -1,10 +1,14 @@
 import type { MetadataRoute } from "next";
 import { getPublicRestaurants, restaurantPublicSlug } from "./lib/jetkiz-api";
+import { getIndexedSeoCategorySlugs } from "./lib/seo-catalog";
 
 const BASE_URL = "https://jetkiz.asia";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const restaurants = await getPublicRestaurants();
+  const [restaurants, seoCategorySlugs] = await Promise.all([
+    getPublicRestaurants(),
+    getIndexedSeoCategorySlugs(),
+  ]);
   const now = new Date();
 
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -27,5 +31,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }));
 
-  return [...staticRoutes, ...restaurantRoutes];
+  const categoryRoutes: MetadataRoute.Sitemap = seoCategorySlugs.map((slug) => ({
+    url: `${BASE_URL}/shchuchinsk/${slug}`,
+    lastModified: now,
+    changeFrequency: "daily",
+    priority: 0.8,
+  }));
+
+  return [...staticRoutes, ...categoryRoutes, ...restaurantRoutes];
 }
