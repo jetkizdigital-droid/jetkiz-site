@@ -129,7 +129,7 @@ export default async function ShchuchinskFoodHubPage() {
                   key={row.category.slug}
                 >
                   <div>
-                    <h2>{row.category.label}</h2>
+                    <h3>{row.category.label}</h3>
                     <p>{row.category.h1}</p>
                   </div>
                   <div className="seo-hub-card__meta">
