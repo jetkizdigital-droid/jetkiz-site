@@ -15,9 +15,6 @@ type PageProps = {
   params: Promise<{ category: string }>;
 };
 
-export function generateStaticParams() {
-  return SEO_FOOD_CATEGORIES.map((category) => ({ category: category.slug }));
-}
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { category: slug } = await params;
