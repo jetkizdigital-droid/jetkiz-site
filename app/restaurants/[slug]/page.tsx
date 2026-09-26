@@ -52,8 +52,13 @@ export default async function RestaurantPage({ params }: PageProps) {
     redirect(`/restaurants/${publicSlug}`);
   }
 
-  const menu = await getPublicMenu(restaurant.id);
-  if (!menu) notFound();
+  const loadedMenu = await getPublicMenu(restaurant.id);
+  const menu = loadedMenu ?? {
+    restaurant,
+    categories: [],
+    items: [],
+    products: [],
+  };
 
   const mergedRestaurant = { ...restaurant, ...menu.restaurant };
   const canonicalUrl = `https://jetkiz.asia/restaurants/${publicSlug}`;
