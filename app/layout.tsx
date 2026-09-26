@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "./marketplace.css";
+import "./seo-catalog.css";
 import { LanguageProvider } from "./components/LanguageProvider";
 import { WebAuthProvider } from "./components/WebAuthProvider";
 
