@@ -15,7 +15,6 @@ type PageProps = {
   params: Promise<{ category: string }>;
 };
 
-
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { category: slug } = await params;
   const category = getSeoFoodCategory(slug);
@@ -198,7 +197,7 @@ export default async function FoodCategoryPage({ params }: PageProps) {
                     </div>
                     <div className="seo-food-card__body">
                       <strong>{formatKzt(Number(entry.item.price))}</strong>
-                      <h2>{entry.item.titleRu}</h2>
+                      <h3>{entry.item.titleRu}</h3>
                       <p className="seo-food-card__restaurant">{entry.restaurant.nameRu}</p>
                       {subtitle && <p className="seo-food-card__description">{subtitle}</p>}
                       <span>Открыть меню →</span>
