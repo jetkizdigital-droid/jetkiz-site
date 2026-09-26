@@ -240,6 +240,32 @@ export const SEO_FOOD_CATEGORIES: SeoFoodCategory[] = [
   seoCategory("fast-food", "Фастфуд", ["фастфуд", "fast food", "fastfood"]),
 ];
 
+export const SEO_FEATURED_CATEGORY_SLUGS = [
+  "pizza",
+  "sushi",
+  "rolls",
+  "burgers",
+  "lagman",
+  "plov",
+  "manty",
+  "beshbarmak",
+  "shashlik",
+  "soups",
+  "salads",
+  "breakfasts",
+  "desserts",
+  "lemonades",
+  "milkshakes",
+  "coffee",
+  "tea",
+  "drinks",
+] as const;
+
+export function getFeaturedSeoCategories(): SeoFoodCategory[] {
+  const featured = new Set<string>(SEO_FEATURED_CATEGORY_SLUGS);
+  return SEO_FOOD_CATEGORIES.filter((category) => featured.has(category.slug));
+}
+
 export function getSeoFoodCategory(slug: string): SeoFoodCategory | null {
   const normalized = decodeURIComponent(slug).trim().toLowerCase();
   return SEO_FOOD_CATEGORIES.find((category) => category.slug === normalized) ?? null;
@@ -308,10 +334,28 @@ export async function getSeoCategoryEntries(slug: string): Promise<SeoCatalogEnt
     });
 }
 
-export async function getIndexedSeoCategorySlugs(): Promise<string[]> {
+export type SeoCategoryStats = {
+  category: SeoFoodCategory;
+  itemCount: number;
+  restaurantCount: number;
+};
+
+export async function getSeoCategoryStats(): Promise<SeoCategoryStats[]> {
   const entries = await loadCatalog();
 
   return SEO_FOOD_CATEGORIES
-    .filter((category) => entries.some((entry) => matchesCategory(entry.item, category)))
-    .map((category) => category.slug);
+    .map((category) => {
+      const matchingEntries = entries.filter((entry) => matchesCategory(entry.item, category));
+      return {
+        category,
+        itemCount: matchingEntries.length,
+        restaurantCount: new Set(matchingEntries.map((entry) => entry.restaurant.id)).size,
+      };
+    })
+    .filter((row) => row.itemCount > 0);
+}
+
+export async function getIndexedSeoCategorySlugs(): Promise<string[]> {
+  const stats = await getSeoCategoryStats();
+  return stats.map((row) => row.category.slug);
 }
