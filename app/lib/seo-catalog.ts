@@ -82,12 +82,17 @@ export const SEO_FOOD_CATEGORIES: SeoFoodCategory[] = [
   seoCategory("potato-wedges", "Картофельные дольки", ["картофельные дольки", "дольки картоф", "по деревенски", "по-деревенски"]),
   seoCategory("snacks", "Закуски", ["закуски", "закуска", "snacks", "стартер"]),
   seoCategory("combo", "Комбо", ["комбо", "combo", "набор"]),
+  seoCategory("cheese-sticks", "Сырные палочки", ["сырные палочки", "cheese sticks"]),
+  seoCategory("onion-rings", "Луковые кольца", ["луковые кольца", "onion rings"]),
+  seoCategory("tacos", "Тако", ["тако", "taco"]),
+  seoCategory("burrito", "Буррито", ["буррито", "burrito"]),
+  seoCategory("quesadilla", "Кесадилья", ["кесадилья", "quesadilla"]),
 
   // Central Asian / Kazakh / Uzbek / Uyghur
   seoCategory("lagman", "Лагман", ["лагман", "lagman", "лағман"]),
   seoCategory("plov", "Плов", ["плов", "pilaf", "palov", "ош"]),
   seoCategory("manty", "Манты", ["манты", "манта", "manty", "мәнті"]),
-  seoCategory("beshbarmak", "Бешбармак", ["бешбармак", "бесбармак", "бешпармак", "ет", "бесбармақ"]),
+  seoCategory("beshbarmak", "Бешбармак", ["бешбармак", "бесбармак", "бешпармак", "қазақша ет", "казакша ет", "бесбармақ"]),
   seoCategory("kuyrdak", "Куырдак", ["куырдак", "қуырдақ", "куурдак"]),
   seoCategory("kazy", "Казы", ["казы", "қазы", "kazy"]),
   seoCategory("baursak", "Баурсаки", ["баурсак", "бауырсак", "бауырсақ"]),
@@ -119,7 +124,16 @@ export const SEO_FOOD_CATEGORIES: SeoFoodCategory[] = [
   seoCategory("bolognese", "Болоньезе", ["болоньезе", "bolognese"]),
   seoCategory("noodles", "Лапша", ["лапша", "noodle", "удон"]),
   seoCategory("wok", "WOK", ["wok", "вок", "удон", "соба"]),
+  seoCategory("udon", "Удон", ["удон", "udon"]),
+  seoCategory("soba", "Соба", ["соба", "soba"]),
   seoCategory("ramen", "Рамен", ["рамен", "ramen"]),
+  seoCategory("pho", "Фо", ["фо бо", "фо га", "pho bo", "pho ga"]),
+  seoCategory("pad-thai", "Пад-тай", ["пад тай", "пад-тай", "pad thai"]),
+  seoCategory("curry", "Карри", ["карри", "curry"]),
+  seoCategory("bibimbap", "Пибимпап", ["пибимпап", "бибимбап", "bibimbap"]),
+  seoCategory("tteokbokki", "Ттокпокки", ["ттокпокки", "токпокки", "tteokbokki"]),
+  seoCategory("spring-rolls", "Спринг-роллы", ["спринг ролл", "спринг-ролл", "spring roll"]),
+  seoCategory("tempura", "Темпура", ["темпура", "tempura"]),
 
   // Soups
   seoCategory("soups", "Супы", ["суп", "супы", "soup"]),
@@ -161,6 +175,14 @@ export const SEO_FOOD_CATEGORIES: SeoFoodCategory[] = [
   seoCategory("waffles", "Вафли", ["вафл", "waffle"]),
   seoCategory("croissants", "Круассаны", ["круассан", "croissant"]),
   seoCategory("bakery", "Выпечка", ["выпечка", "булочка", "слойка", "печенье"]),
+  seoCategory("cookies", "Печенье", ["печенье", "cookie"]),
+  seoCategory("muffins", "Маффины", ["маффин", "muffin"]),
+  seoCategory("eclairs", "Эклеры", ["эклер", "eclair"]),
+  seoCategory("macarons", "Макаронс", ["макарон", "macaron"]),
+  seoCategory("honey-cake", "Медовик", ["медовик", "honey cake"]),
+  seoCategory("napoleon-cake", "Наполеон", ["наполеон"]),
+  seoCategory("red-velvet-cake", "Красный бархат", ["красный бархат", "red velvet"]),
+  seoCategory("carrot-cake", "Морковный торт", ["морковный торт", "carrot cake"]),
 
   // Drinks — broad
   seoCategory("drinks", "Напитки", ["напитки", "напиток", "beverage", "drinks"]),
@@ -175,9 +197,11 @@ export const SEO_FOOD_CATEGORIES: SeoFoodCategory[] = [
   seoCategory("soda", "Газированные напитки", ["газировка", "газированный", "газированные напитки"]),
   seoCategory("cola", "Cola", ["coca cola", "coca-cola", "pepsi", "кола", "cola"]),
   seoCategory("water", "Вода", ["вода", "water"]),
+  seoCategory("mineral-water", "Минеральная вода", ["минеральная вода", "mineral water"]),
+  seoCategory("tonic", "Тоник", ["тоник", "tonic"]),
 
   // Tea / coffee
-  seoCategory("tea", "Чай", ["чай", "tea"]),
+  seoCategory("tea", "Чай", ["чай"]),
   seoCategory("iced-tea", "Холодный чай", ["холодный чай", "ice tea", "iced tea"]),
   seoCategory("coffee", "Кофе", ["кофе", "coffee"]),
   seoCategory("iced-coffee", "Холодный кофе", ["холодный кофе", "ice coffee", "iced coffee", "айс кофе"]),
@@ -190,6 +214,8 @@ export const SEO_FOOD_CATEGORIES: SeoFoodCategory[] = [
   seoCategory("hot-chocolate", "Горячий шоколад", ["горячий шоколад", "hot chocolate"]),
   seoCategory("matcha", "Матча", ["матча", "matcha"]),
   seoCategory("bubble-tea", "Bubble Tea", ["bubble tea", "бабл ти", "бабл-ти"]),
+  seoCategory("frappe", "Фраппе", ["фраппе", "frappe"]),
+  seoCategory("frappuccino", "Фраппучино", ["фраппучино", "frappuccino"]),
 
   // Traditional / dairy drinks
   seoCategory("kompot", "Компот", ["компот"]),
