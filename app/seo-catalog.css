@@ -174,7 +174,7 @@
   letter-spacing: -.025em;
 }
 
-.seo-food-card__body h2 {
+.seo-food-card__body h3 {
   margin: 0;
   font-size: 16px;
   line-height: 1.22;
@@ -295,7 +295,7 @@
     font-size: 16px;
   }
 
-  .seo-food-card__body h2 {
+  .seo-food-card__body h3 {
     font-size: 13px;
   }
 
