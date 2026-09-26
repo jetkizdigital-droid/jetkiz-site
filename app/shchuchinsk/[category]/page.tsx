@@ -141,7 +141,7 @@ export default async function FoodCategoryPage({ params }: PageProps) {
         </section>
 
         <nav className="seo-category-links" aria-label="Популярные блюда в Щучинске">
-          {SEO_FOOD_CATEGORIES.map((item) => (
+          {featuredCategories.map((item) => (
             <Link
               key={item.slug}
               className={item.slug === category.slug ? "is-active" : ""}
