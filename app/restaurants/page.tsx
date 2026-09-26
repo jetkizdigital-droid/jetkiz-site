@@ -19,7 +19,8 @@ export const metadata: Metadata = {
 };
 
 export default async function RestaurantsPage() {
-  const [restaurants, featuredCategories] = await Promise.all([\n    getPublicRestaurants(),\n    Promise.resolve(getFeaturedSeoCategories()),\n  ]);
+  const restaurants = await getPublicRestaurants();
+  const featuredCategories = getFeaturedSeoCategories();
 
   return (
     <PageShell>
@@ -30,6 +31,9 @@ export default async function RestaurantsPage() {
             {category.label}
           </Link>
         ))}
+        <Link className="seo-category-strip__all" href="/shchuchinsk">
+          Все блюда и напитки →
+        </Link>
       </nav>
       <RestaurantsCatalogClient restaurants={restaurants} />
       <SiteFooter />
