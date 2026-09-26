@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { PageShell, SiteFooter, SiteHeader } from "../../components/SiteChrome";
 import { apiAssetUrl, formatKzt } from "../../lib/jetkiz-api";
 import {
-  SEO_FOOD_CATEGORIES,
+  getFeaturedSeoCategories,
   getSeoCategoryEntries,
   getSeoFoodCategory,
 } from "../../lib/seo-catalog";
@@ -61,6 +61,7 @@ export default async function FoodCategoryPage({ params }: PageProps) {
   if (!category) notFound();
 
   const entries = await getSeoCategoryEntries(category.slug);
+  const featuredCategories = getFeaturedSeoCategories();
   const visibleEntries = entries.slice(0, 120);
   const restaurantCount = new Set(entries.map((entry) => entry.restaurant.id)).size;
   const canonicalUrl = `${BASE_URL}/shchuchinsk/${category.slug}`;
@@ -78,8 +79,8 @@ export default async function FoodCategoryPage({ params }: PageProps) {
       {
         "@type": "ListItem",
         position: 2,
-        name: "Рестораны Щучинска",
-        item: `${BASE_URL}/restaurants`,
+        name: "Еда в Щучинске",
+        item: `${BASE_URL}/shchuchinsk`,
       },
       {
         "@type": "ListItem",
@@ -125,7 +126,7 @@ export default async function FoodCategoryPage({ params }: PageProps) {
         <nav className="seo-breadcrumbs" aria-label="Хлебные крошки">
           <Link href="/">JETKIZ</Link>
           <span>/</span>
-          <Link href="/restaurants">Рестораны Щучинска</Link>
+          <Link href="/shchuchinsk">Еда в Щучинске</Link>
           <span>/</span>
           <strong>{category.label}</strong>
         </nav>
@@ -141,7 +142,7 @@ export default async function FoodCategoryPage({ params }: PageProps) {
         </section>
 
         <nav className="seo-category-links" aria-label="Популярные блюда в Щучинске">
-          {SEO_FOOD_CATEGORIES.map((item) => (
+          {featuredCategories.map((item) => (
             <Link
               key={item.slug}
               className={item.slug === category.slug ? "is-active" : ""}
@@ -150,6 +151,9 @@ export default async function FoodCategoryPage({ params }: PageProps) {
               {item.label}
             </Link>
           ))}
+          <Link className="seo-category-links__all" href="/shchuchinsk">
+            Все блюда и напитки →
+          </Link>
         </nav>
 
         <section className="seo-food-content">

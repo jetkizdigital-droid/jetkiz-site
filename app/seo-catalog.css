@@ -304,3 +304,121 @@
     padding-bottom: 80px;
   }
 }
+
+
+/* City SEO hub */
+.seo-category-strip__all,
+.seo-category-links__all {
+  border-color: transparent !important;
+  background: var(--market-green) !important;
+  color: #fff !important;
+}
+
+.seo-hub-content {
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 10px clamp(20px, 4vw, 56px) 82px;
+}
+
+.seo-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.seo-hub-card {
+  min-width: 0;
+  min-height: 132px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px;
+  border: 1px solid var(--market-line);
+  border-radius: 17px;
+  background: #fff;
+  color: var(--market-ink);
+  text-decoration: none;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.seo-hub-card:hover {
+  transform: translateY(-2px);
+  border-color: #d2d6cf;
+  box-shadow: 0 14px 30px rgba(20, 24, 20, .07);
+}
+
+.seo-hub-card h3 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.08;
+  letter-spacing: -.035em;
+}
+
+.seo-hub-card p {
+  margin: 6px 0 0;
+  color: var(--market-muted);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.seo-hub-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #7c817a;
+  font-size: 10px;
+}
+
+.seo-hub-card__meta span {
+  min-height: 25px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: #f1f3ef;
+}
+
+.seo-hub-card__meta strong {
+  margin-left: auto;
+  color: var(--market-green-dark);
+  font-size: 20px;
+  line-height: 1;
+}
+
+@media (max-width: 1100px) {
+  .seo-hub-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .seo-hub-content {
+    padding-inline: 16px;
+    padding-bottom: 64px;
+  }
+
+  .seo-hub-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .seo-hub-card {
+    min-height: 124px;
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .seo-hub-card h3 {
+    font-size: 17px;
+  }
+
+  .seo-hub-card__meta {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .seo-hub-card__meta strong {
+    display: none;
+  }
+}
