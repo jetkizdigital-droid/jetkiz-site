@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "./marketplace.css";
+import "./seo-catalog.css";
 import { LanguageProvider } from "./components/LanguageProvider";
 import { WebAuthProvider } from "./components/WebAuthProvider";
 
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
     "JETKIZ",
     "доставка Бурабай",
   ],
-  alternates: { canonical: "/restaurants" },
+  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     locale: "ru_KZ",
@@ -39,7 +40,7 @@ export const metadata: Metadata = {
     title: "JETKIZ — доставка еды в Щучинске",
     description:
       "Рестораны Щучинска, актуальные меню и цены. Заказ еды онлайн с доставкой или самовывозом.",
-    url: "https://jetkiz.asia/restaurants",
+    url: "https://jetkiz.asia/",
   },
   themeColor: "#ffffff",
   icons: {
