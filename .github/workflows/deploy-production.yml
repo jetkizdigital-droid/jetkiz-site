@@ -1,9 +1,7 @@
 name: Site Production Deploy
 
 on:
-  push:
-    branches:
-      - main
+  # Production changes are deployed explicitly, never for every source push.
   workflow_dispatch:
 
 permissions:
