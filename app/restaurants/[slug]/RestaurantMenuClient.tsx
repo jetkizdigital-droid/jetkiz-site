@@ -228,7 +228,7 @@ export function RestaurantMenuClient({
           <div className="restaurant-menu-hero__scene" aria-hidden="true">
             <img
               className="restaurant-menu-hero__photo"
-              src="/jetkiz-courier-burabay.webp"
+              src="/generated/jetkiz-courier-burabay.webp"
               alt=""
             />
           </div>
