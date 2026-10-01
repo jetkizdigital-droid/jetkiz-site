@@ -122,7 +122,7 @@ export function RestaurantsCatalogClient({
       if (categoryRestaurantIds && !categoryRestaurantIds.has(restaurant.id)) return false;
       return true;
     });
-  }, [query, filter, restaurants, categoryRestaurantIds]);
+  }, [query, filter, restaurants]);
 
   useEffect(() => {
     const readCart = () => {
