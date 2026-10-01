@@ -171,7 +171,6 @@ export default async function RestaurantPage({ params }: PageProps) {
 
   return (
     <PageShell>
-      <SiteHeader current="catalog" />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(restaurantStructuredData).replace(/</g, "\\u003c") }}
