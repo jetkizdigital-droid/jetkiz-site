@@ -5972,7 +5972,7 @@ body {
   display: block;
   object-fit: cover;
   object-position: 86% 66%;
-  filter: saturate(1.12) contrast(1.04) sharpen(1);
+  filter: saturate(1.12) contrast(1.04);
   -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,.08) 9%, rgba(0,0,0,.72) 29%, #000 45%);
   mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,.08) 9%, rgba(0,0,0,.72) 29%, #000 45%);
 }
