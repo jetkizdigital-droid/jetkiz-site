@@ -3555,3 +3555,966 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* ========================================================================== */
+/* JETKIZ FIGMA MARKETPLACE — Desktop 4:2 / Mobile 4:124                     */
+/* ========================================================================== */
+
+.page:has(.jetkiz-marketplace) {
+  background: #fff;
+}
+
+.page:has(.jetkiz-marketplace) .scroll-progress {
+  display: none;
+}
+
+.jetkiz-marketplace {
+  --figma-green: #08bd25;
+  --figma-green-dark: #07991e;
+  --figma-lime: #aaff22;
+  --figma-yellow: #ffd138;
+  --figma-orange: #ff965e;
+  --figma-ink: #0a0a0a;
+  --figma-muted: #8e98a8;
+  --figma-line: #e6e9ed;
+  --figma-soft: #f7f7f7;
+
+  min-height: 100vh;
+  padding-bottom: 36px;
+  background: #fff;
+  color: var(--figma-ink);
+  font-family: var(--font-geist-sans), Arial, sans-serif;
+}
+
+.market-figma-header {
+  width: 100%;
+  background: #fff;
+}
+
+.market-figma-header__inner {
+  width: min(1360px, calc(100% - 80px));
+  min-height: 96px;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 20px;
+}
+
+.market-figma-brand {
+  width: 104px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  flex: 0 0 104px;
+  color: var(--figma-green);
+  font-size: 39px;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: -.055em;
+  text-decoration: none;
+}
+
+.market-figma-search {
+  width: 520px;
+  height: 56px;
+  margin-left: 76px;
+  display: flex;
+  align-items: center;
+  flex: 0 0 520px;
+  padding: 0 20px;
+  border: 1px solid #e7e9ec;
+  border-radius: 30px;
+  background: #f8f8f8;
+  color: #111;
+}
+
+.market-figma-search svg {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.market-figma-search input {
+  width: 100%;
+  height: 100%;
+  margin-left: 15px;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--figma-ink);
+  font: inherit;
+  font-size: 14px;
+}
+
+.market-figma-search input::placeholder {
+  color: #9299a6;
+  opacity: 1;
+}
+
+.market-figma-location {
+  width: 190px;
+  height: 56px;
+  margin-left: 30px;
+  display: flex;
+  align-items: center;
+  flex: 0 0 190px;
+  padding: 0 18px;
+  border: 1px solid #dceede;
+  border-radius: 30px;
+  background: #f0faf1;
+  font-size: 14px;
+}
+
+.market-figma-location strong {
+  margin-left: 14px;
+  font-weight: 760;
+}
+
+.market-figma-location > span:last-child {
+  margin-left: auto;
+  color: var(--figma-green-dark);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.market-location-dot {
+  width: 14px;
+  height: 14px;
+  display: block;
+  flex: 0 0 14px;
+  border-radius: 50%;
+  background: var(--figma-green);
+}
+
+.market-figma-lang {
+  width: 52px;
+  height: 56px;
+  margin-left: auto;
+  border: 0;
+  border-radius: 30px;
+  background: var(--figma-lime);
+  color: #050505;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.market-figma-login {
+  width: 110px;
+  height: 56px;
+  margin-left: 11px;
+  border: 1px solid #e0e4e8;
+  border-radius: 17px;
+  background: #fff;
+  color: #111;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 760;
+}
+
+.market-figma-login:disabled {
+  opacity: .6;
+  cursor: default;
+}
+
+.market-figma-main {
+  width: min(1360px, calc(100% - 80px));
+  margin: 12px auto 0;
+}
+
+.market-figma-promos {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.093fr;
+  gap: 15px;
+}
+
+.market-figma-promo {
+  position: relative;
+  height: 218px;
+  overflow: hidden;
+  border-radius: 26px;
+  box-shadow: 0 14px 32px rgba(30, 38, 30, .08);
+}
+
+.market-figma-promo--green {
+  background: #e6fceb;
+}
+
+.market-figma-promo--yellow {
+  background: #fff2b5;
+}
+
+.market-figma-promo--orange {
+  background: #ffe0cb;
+}
+
+.market-figma-promo__visual {
+  position: absolute;
+  top: 18px;
+  right: 10px;
+  width: 42%;
+  height: 188px;
+  overflow: hidden;
+  border-radius: 26px;
+  background-position: center;
+  background-size: cover;
+  filter: saturate(1.24) contrast(1.04);
+}
+
+.market-figma-promo--green .market-figma-promo__visual {
+  background-color: #bff3c4;
+}
+
+.market-figma-promo--yellow .market-figma-promo__visual {
+  background-color: var(--figma-yellow);
+}
+
+.market-figma-promo--orange .market-figma-promo__visual {
+  background-color: var(--figma-orange);
+}
+
+.market-figma-promo__visual--feast {
+  background-image:
+    linear-gradient(rgba(8, 189, 37, .04), rgba(8, 189, 37, .04)),
+    url("/jetkiz-feast-hero.webp");
+}
+
+.market-figma-promo__visual--table {
+  background-image:
+    linear-gradient(rgba(255, 209, 56, .06), rgba(255, 209, 56, .06)),
+    url("/jetkiz-feast-table.webp");
+}
+
+.market-figma-promo__visual--burabay {
+  background-image:
+    linear-gradient(rgba(255, 122, 51, .04), rgba(255, 122, 51, .04)),
+    url("/jetkiz-burabay-feast.webp");
+}
+
+.market-figma-categories {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.market-figma-category {
+  height: 76px;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 18px;
+  border-radius: 18px;
+  background: #f8f8f8;
+  color: #111;
+  font-size: 14px;
+  font-weight: 560;
+  text-decoration: none;
+  transition: transform .16s ease, background .16s ease;
+}
+
+.market-figma-category:hover {
+  transform: translateY(-2px);
+  background: #f2f2f2;
+}
+
+.market-figma-category__icon {
+  font-size: 28px;
+  line-height: 1;
+  filter: saturate(1.2);
+}
+
+.market-figma-filters {
+  margin-top: 22px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.market-figma-filters button {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid #dfe4e7;
+  border-radius: 23px;
+  background: #fff;
+  color: #202020;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.market-figma-filters button.is-active {
+  border-color: var(--figma-green);
+  background: #f1fff2;
+  color: var(--figma-green-dark);
+  font-weight: 760;
+}
+
+.market-figma-restaurants {
+  margin-top: 31px;
+}
+
+.market-figma-section-head {
+  min-height: 39px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 12px;
+}
+
+.market-figma-section-head h1 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 820;
+  line-height: 1.05;
+  letter-spacing: -.035em;
+}
+
+.market-figma-section-head button {
+  margin-right: 11px;
+  padding: 8px 0;
+  border: 0;
+  background: transparent;
+  color: var(--figma-green-dark);
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 760;
+}
+
+.market-figma-section-head button span {
+  margin-left: 6px;
+  font-size: 18px;
+}
+
+.market-figma-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.market-figma-card {
+  min-width: 0;
+  height: 350px;
+  overflow: hidden;
+  border: 1px solid #edf0f2;
+  border-radius: 24px;
+  background: #fff;
+  color: #111;
+  text-decoration: none;
+  box-shadow: 0 13px 28px rgba(20, 28, 20, .10);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.market-figma-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 17px 36px rgba(20, 28, 20, .14);
+}
+
+.market-figma-card__media {
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+  background: #efefef;
+}
+
+.market-figma-card__media > img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  filter: saturate(1.24) contrast(1.04);
+  transition: transform .25s ease;
+}
+
+.market-figma-card:hover .market-figma-card__media > img {
+  transform: scale(1.025);
+}
+
+.market-figma-card__placeholder {
+  width: 100%;
+  height: 100%;
+  background: #efefef;
+}
+
+.market-figma-open {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 14px;
+  background: #1b1b1b;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 820;
+}
+
+.market-figma-open.is-open {
+  background: var(--figma-lime);
+  color: #111;
+}
+
+.market-figma-heart {
+  position: absolute;
+  top: 13px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255,255,255,.92);
+  color: #111;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.market-figma-card__body {
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 18px 17px;
+}
+
+.market-figma-card__title {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.market-figma-card__title h2 {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  color: #111;
+  font-size: 20px;
+  font-weight: 820;
+  line-height: 1.1;
+  letter-spacing: -.025em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.market-figma-rating {
+  flex: 0 0 auto;
+  color: #111;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.market-figma-rating b {
+  margin-right: 4px;
+  color: #ffb000;
+  font-size: 18px;
+}
+
+.market-figma-card__body > p {
+  margin: 9px 0 0;
+  overflow: hidden;
+  color: var(--figma-muted);
+  font-size: 12px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.market-figma-card__meta {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.market-figma-time {
+  color: #111;
+  font-size: 12px;
+  font-weight: 550;
+  white-space: nowrap;
+}
+
+.market-figma-accept {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 13px;
+  border-radius: 18px;
+  background: #f2f4f2;
+  color: #767d76;
+  font-size: 10px;
+  font-weight: 620;
+  white-space: nowrap;
+}
+
+.market-figma-accept.is-active {
+  background: #eefbef;
+  color: var(--figma-green-dark);
+}
+
+.market-figma-nearby {
+  margin: 34px 0 0;
+  font-size: 28px;
+  font-weight: 820;
+  letter-spacing: -.025em;
+}
+
+.market-figma-empty {
+  min-height: 240px;
+  display: grid;
+  place-content: center;
+  gap: 7px;
+  border: 1px solid #edf0f2;
+  border-radius: 24px;
+  background: #fafafa;
+  text-align: center;
+}
+
+.market-figma-empty strong {
+  font-size: 22px;
+}
+
+.market-figma-empty p {
+  max-width: 440px;
+  margin: 0;
+  color: var(--figma-muted);
+  font-size: 13px;
+}
+
+.market-floating-cart {
+  position: fixed;
+  z-index: 85;
+  right: max(18px, calc((100vw - 1440px) / 2 + 18px));
+  bottom: 52px;
+  width: 126px;
+  height: 122px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--figma-green);
+  color: #fff;
+  text-decoration: none;
+  box-shadow: 0 13px 26px rgba(0, 0, 0, .17);
+}
+
+.market-floating-cart__icon {
+  display: none;
+}
+
+.market-floating-cart__badge {
+  position: absolute;
+  top: -4px;
+  right: 7px;
+  min-width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  padding: 0 7px;
+  border-radius: 14px;
+  background: #ff6b34;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.market-mobile-bottom {
+  display: none;
+}
+
+@media (max-width: 1100px) and (min-width: 701px) {
+  .market-figma-header__inner,
+  .market-figma-main {
+    width: calc(100% - 40px);
+  }
+
+  .market-figma-search {
+    width: min(42vw, 460px);
+    flex-basis: min(42vw, 460px);
+    margin-left: 28px;
+  }
+
+  .market-figma-location {
+    margin-left: 14px;
+  }
+
+  .market-figma-categories {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .market-figma-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .jetkiz-marketplace {
+    min-height: 100dvh;
+    padding-bottom: 72px;
+  }
+
+  .market-figma-header__inner {
+    width: auto;
+    min-height: 120px;
+    margin: 0 16px;
+    display: grid;
+    grid-template-columns: auto 132px 52px;
+    grid-template-rows: 42px 48px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px 10px;
+    padding-top: 16px;
+  }
+
+  .market-figma-brand {
+    width: auto;
+    height: 42px;
+    flex-basis: auto;
+    font-size: 38px;
+  }
+
+  .market-figma-location {
+    width: 132px;
+    height: 42px;
+    margin: 0;
+    padding: 0 14px;
+    border-radius: 24px;
+    font-size: 13px;
+  }
+
+  .market-figma-location strong {
+    margin-left: 11px;
+  }
+
+  .market-figma-location > span:last-child {
+    font-size: 14px;
+  }
+
+  .market-location-dot {
+    width: 12px;
+    height: 12px;
+    flex-basis: 12px;
+  }
+
+  .market-figma-lang {
+    width: 52px;
+    height: 50px;
+    margin: 0;
+    border-radius: 50%;
+    font-size: 15px;
+  }
+
+  .market-figma-login {
+    display: none;
+  }
+
+  .market-figma-search {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    height: 48px;
+    margin: 0;
+    padding: 0 18px;
+    border-radius: 25px;
+  }
+
+  .market-figma-search svg {
+    width: 19px;
+    height: 19px;
+  }
+
+  .market-figma-search input {
+    margin-left: 17px;
+    font-size: 13px;
+  }
+
+  .market-figma-main {
+    width: auto;
+    margin: 16px 16px 0;
+  }
+
+  .market-figma-promos {
+    grid-template-columns: 2fr 1fr;
+    gap: 10px;
+  }
+
+  .market-figma-promo {
+    height: 158px;
+    border-radius: 22px;
+    box-shadow: none;
+  }
+
+  .market-figma-promo:nth-child(3) {
+    display: none;
+  }
+
+  .market-figma-promo__visual {
+    top: 10px;
+    right: 0;
+    width: 44%;
+    height: 148px;
+    border-radius: 22px;
+  }
+
+  .market-figma-promo--yellow .market-figma-promo__visual {
+    top: auto;
+    bottom: 0;
+    width: 68%;
+    height: 68px;
+    border-radius: 20px 20px 22px 20px;
+  }
+
+  .market-figma-categories {
+    margin-top: 16px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .market-figma-category {
+    height: 78px;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    padding: 7px 4px 8px;
+    border-radius: 18px;
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .market-figma-category.is-mobile {
+    display: flex;
+  }
+
+  .market-figma-category__icon {
+    font-size: 28px;
+  }
+
+  .market-figma-filters {
+    display: none;
+  }
+
+  .market-figma-restaurants {
+    margin-top: 42px;
+  }
+
+  .market-figma-section-head {
+    min-height: 29px;
+    align-items: baseline;
+    margin-bottom: 17px;
+  }
+
+  .market-figma-section-head h1 {
+    font-size: 24px;
+  }
+
+  .market-figma-section-head button {
+    margin: 0;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .market-figma-section-head button span {
+    margin-left: 4px;
+    font-size: 15px;
+  }
+
+  .market-figma-grid {
+    grid-template-columns: 1fr;
+    gap: 11px;
+  }
+
+  .market-figma-card {
+    height: 76px;
+    display: grid;
+    grid-template-columns: 128px minmax(0, 1fr);
+    border-radius: 18px;
+    box-shadow: none;
+  }
+
+  .market-figma-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .market-figma-card__media {
+    height: 76px;
+    border-radius: 17px 0 0 17px;
+  }
+
+  .market-figma-card__media > img {
+    filter: saturate(1.25) contrast(1.04);
+  }
+
+  .market-figma-card__placeholder {
+    background: #ededed;
+  }
+
+  .market-figma-open {
+    top: 8px;
+    left: 8px;
+    min-height: 28px;
+    padding: 0 12px;
+    font-size: 10px;
+  }
+
+  .market-figma-heart {
+    display: none;
+  }
+
+  .market-figma-card__body {
+    height: 76px;
+    min-width: 0;
+    padding: 10px 12px 8px 14px;
+  }
+
+  .market-figma-card__title h2 {
+    font-size: 14px;
+  }
+
+  .market-figma-rating {
+    font-size: 12px;
+    color: #ffab00;
+  }
+
+  .market-figma-rating b {
+    margin-right: 3px;
+    font-size: 16px;
+  }
+
+  .market-figma-card__body > p {
+    margin-top: 4px;
+    font-size: 9px;
+  }
+
+  .market-figma-card__meta {
+    gap: 6px;
+  }
+
+  .market-figma-time {
+    font-size: 10px;
+  }
+
+  .market-figma-accept {
+    min-height: 20px;
+    padding: 0;
+    background: transparent;
+    font-size: 9px;
+  }
+
+  .market-figma-accept.is-active {
+    background: transparent;
+  }
+
+  .market-figma-nearby {
+    display: none;
+  }
+
+  .market-floating-cart {
+    right: 23px;
+    bottom: 56px;
+    width: 56px;
+    height: 56px;
+  }
+
+  .market-floating-cart__icon {
+    width: 27px;
+    height: 27px;
+    display: block;
+  }
+
+  .market-floating-cart__icon svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .market-floating-cart__badge {
+    top: -7px;
+    right: -2px;
+    min-width: 24px;
+    height: 24px;
+    border-radius: 12px;
+    font-size: 10px;
+  }
+
+  .market-mobile-bottom {
+    position: fixed;
+    z-index: 80;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 56px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid #e4e7ea;
+    background: rgba(255, 255, 255, .98);
+    backdrop-filter: blur(16px);
+  }
+
+  .market-mobile-bottom a {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: column;
+    gap: 2px;
+    padding-top: 6px;
+    color: #596273;
+    font-size: 11px;
+    text-decoration: none;
+  }
+
+  .market-mobile-bottom a.is-active {
+    color: var(--figma-green-dark);
+    font-weight: 760;
+  }
+
+  .market-mobile-bottom svg {
+    width: 25px;
+    height: 25px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .market-mobile-bottom a.is-active svg {
+    fill: none;
+    stroke-width: 2.2;
+  }
+
+  .market-figma-empty {
+    min-height: 180px;
+    border-radius: 18px;
+  }
+}
+
+@media (max-width: 430px) {
+  .market-figma-header__inner {
+    margin-right: 16px;
+    margin-left: 16px;
+  }
+
+  .market-figma-section-head h1 {
+    max-width: 230px;
+  }
+}
