@@ -75,7 +75,6 @@ export function RestaurantsCatalogClient({
 
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
-  const [categoryId, setCategoryId] = useState<string | null>(null);
   const [cartCount, setCartCount] = useState(0);
   const [cartHref, setCartHref] = useState("/restaurants");
 
@@ -108,7 +107,6 @@ export function RestaurantsCatalogClient({
 
       if (!matchesQuery) return false;
       if (filter === "open" && restaurant.isOpenNow !== true) return false;
-      if (categoryRestaurantIds && !categoryRestaurantIds.has(restaurant.id)) return false;
       return true;
     });
   }, [query, filter, restaurants]);
