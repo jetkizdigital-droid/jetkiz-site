@@ -50,8 +50,8 @@ test("renders marketplace, partner, courier and document routes", async () => {
   };
   const context = { waitUntil() {}, passThroughOnException() {} };
   const routes = [
-    ["/", "Весь Щучинск"],
-    ["/restaurants", "Рестораны Щучинска"],
+    ["/", "Популярные рестораны"],
+    ["/restaurants", "Популярные рестораны"],
     ["/partners/restaurants", "Больше заказов"],
     ["/couriers", "Знаете город"],
     ["/offer", "Пользовательское соглашение и публичная оферта"],
@@ -79,9 +79,11 @@ test("renders the Astana Hub participant mark and official legal references", as
   const env = { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } };
   const context = { waitUntil() {}, passThroughOnException() {} };
 
-  const home = await worker.fetch(new Request("http://localhost/", { headers: { accept: "text/html" } }), env, context);
+  const partner = await worker.fetch(new Request("http://localhost/partners/restaurants", { headers: { accept: "text/html" } }), env, context);
   const offer = await worker.fetch(new Request("http://localhost/offer", { headers: { accept: "text/html" } }), env, context);
 
-  assert.match(await home.text(), /Участник Astana Hub/);
+  // The Figma marketplace homepage intentionally has no legacy mega-footer.
+  // The Astana Hub participant mark remains visible on the company/partner surface.
+  assert.match(await partner.text(), /Участник Astana Hub/);
   assert.match(await offer.text(), /adilet\.zan\.kz\/rus\/docs\/Z100000274_/);
 });
