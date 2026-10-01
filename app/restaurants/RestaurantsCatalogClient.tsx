@@ -97,17 +97,6 @@ export function RestaurantsCatalogClient({
     [home.categories],
   );
 
-  const categoryRestaurantIds = useMemo(() => {
-    if (!categoryId) return null;
-    const category = categories.find((item) => item.id === categoryId);
-    if (!category) return null;
-    return new Set(
-      (category.products || [])
-        .map((item) => item?.product?.restaurantId)
-        .filter((value): value is string => Boolean(value)),
-    );
-  }, [categories, categoryId]);
-
   const filtered = useMemo(() => {
     const normalized = query.trim().toLowerCase();
 
@@ -237,21 +226,15 @@ export function RestaurantsCatalogClient({
         {categories.length > 0 && (
           <nav className="market-figma-categories" aria-label={ru ? "Категории еды" : "Тағам санаттары"}>
             {categories.map((category, index) => {
-              const image = apiAssetUrl(category.imageUrl);
               const title = ru ? category.titleRu : category.titleKk || category.titleRu;
-              const active = categoryId === category.id;
               return (
-                <button
-                  type="button"
+                <Link
                   key={category.id}
-                  className={`market-figma-category${index < 4 ? " is-mobile" : ""}${active ? " is-active" : ""}`}
-                  onClick={() => setCategoryId(active ? null : category.id)}
+                  href={`/categories/${encodeURIComponent(category.id)}`}
+                  className={`market-figma-category${index < 4 ? " is-mobile" : ""}`}
                 >
-                  <span className="market-figma-category__icon" aria-hidden="true">
-                    {image ? <img src={image} alt="" /> : <span>•</span>}
-                  </span>
                   <span>{title}</span>
-                </button>
+                </Link>
               );
             })}
           </nav>
@@ -261,10 +244,7 @@ export function RestaurantsCatalogClient({
           <button
             type="button"
             className={filter === "all" ? "is-active" : ""}
-            onClick={() => {
-              setFilter("all");
-              setCategoryId(null);
-            }}
+            onClick={() => setFilter("all")}
           >
             {ru ? "Все рестораны" : "Барлық мейрамханалар"}
           </button>
