@@ -226,20 +226,11 @@ export function RestaurantMenuClient({
       <main className="restaurant-menu-v2__main">
         <section className="restaurant-menu-hero">
           <div className="restaurant-menu-hero__scene" aria-hidden="true">
-            <div className="restaurant-menu-hero__sun" />
-            <div className="restaurant-menu-hero__mountain restaurant-menu-hero__mountain--one" />
-            <div className="restaurant-menu-hero__mountain restaurant-menu-hero__mountain--two" />
-            <div className="restaurant-menu-hero__mountain restaurant-menu-hero__mountain--three" />
-            <div className="restaurant-menu-hero__lake" />
-            <div className="restaurant-menu-hero__city" />
-            <div className="restaurant-menu-hero__road" />
-            <div className="restaurant-menu-hero__courier">
-              <span className="restaurant-menu-hero__wheel restaurant-menu-hero__wheel--one" />
-              <span className="restaurant-menu-hero__wheel restaurant-menu-hero__wheel--two" />
-              <span className="restaurant-menu-hero__scooter" />
-              <span className="restaurant-menu-hero__rider" />
-              <span className="restaurant-menu-hero__box">jetkiz</span>
-            </div>
+            <img
+              className="restaurant-menu-hero__photo"
+              src="/jetkiz-courier-burabay.webp"
+              alt=""
+            />
           </div>
 
           <div className="restaurant-menu-hero__info">
