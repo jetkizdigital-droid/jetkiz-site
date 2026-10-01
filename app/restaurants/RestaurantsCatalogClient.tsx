@@ -4,20 +4,14 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useLanguage } from "../components/LanguageProvider";
 import { useWebAuth } from "../components/WebAuthProvider";
-import { apiAssetUrl, restaurantPublicSlug, type PublicRestaurant } from "../lib/jetkiz-api";
+import {
+  apiAssetUrl,
+  restaurantPublicSlug,
+  type PublicHomeCms,
+  type PublicRestaurant,
+} from "../lib/jetkiz-api";
 
-type Filter = "all" | "delivery" | "pickup" | "open" | "rating" | "promo";
-
-const categories = [
-  { slug: "burgers", ru: "Бургеры", kz: "Бургерлер", icon: "🍔", mobile: true },
-  { slug: "pizza", ru: "Пицца", kz: "Пицца", icon: "🍕", mobile: true },
-  { slug: "sushi", ru: "Суши", kz: "Суши", icon: "🍣", mobile: false },
-  { slug: "doner", ru: "Донер", kz: "Донер", icon: "🌯", mobile: true },
-  { slug: "shashlik", ru: "Шашлык", kz: "Кәуап", icon: "🍢", mobile: false },
-  { slug: "desserts", ru: "Десерты", kz: "Десерттер", icon: "🍰", mobile: true },
-  { slug: "coffee", ru: "Кофе", kz: "Кофе", icon: "☕", mobile: false },
-  { slug: "breakfasts", ru: "Завтраки", kz: "Таңғы ас", icon: "🍳", mobile: false },
-] as const;
+type Filter = "all" | "open";
 
 function SearchIcon() {
   return (
@@ -67,39 +61,67 @@ function LocationDot() {
   return <span className="market-location-dot" aria-hidden="true" />;
 }
 
-export function RestaurantsCatalogClient({ restaurants }: { restaurants: PublicRestaurant[] }) {
+export function RestaurantsCatalogClient({
+  restaurants,
+  home,
+}: {
+  restaurants: PublicRestaurant[];
+  home: PublicHomeCms;
+}) {
   const { lang, setLang } = useLanguage();
   const { user, loading: authLoading, openLogin } = useWebAuth();
   const ru = lang === "ru";
 
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
+  const [categoryId, setCategoryId] = useState<string | null>(null);
   const [cartCount, setCartCount] = useState(0);
   const [cartHref, setCartHref] = useState("/restaurants");
+
+  const promos = useMemo(
+    () =>
+      [...(home.promos || [])]
+        .filter((item) => item?.isActive !== false)
+        .sort((a, b) => Number(a.sortOrder ?? 0) - Number(b.sortOrder ?? 0))
+        .slice(0, 8),
+    [home.promos],
+  );
+
+  const categories = useMemo(
+    () =>
+      [...(home.categories || [])]
+        .filter((item) => item?.isActive !== false)
+        .sort((a, b) => Number(a.sortOrder ?? 0) - Number(b.sortOrder ?? 0))
+        .slice(0, 12),
+    [home.categories],
+  );
+
+  const categoryRestaurantIds = useMemo(() => {
+    if (!categoryId) return null;
+    const category = categories.find((item) => item.id === categoryId);
+    if (!category) return null;
+    return new Set(
+      (category.products || [])
+        .map((item) => item?.product?.restaurantId)
+        .filter((value): value is string => Boolean(value)),
+    );
+  }, [categories, categoryId]);
 
   const filtered = useMemo(() => {
     const normalized = query.trim().toLowerCase();
 
-    const rows = restaurants.filter((restaurant) => {
+    return restaurants.filter((restaurant) => {
       const matchesQuery =
         !normalized ||
         [restaurant.nameRu, restaurant.nameKk, restaurant.address]
           .some((value) => String(value ?? "").toLowerCase().includes(normalized));
 
       if (!matchesQuery) return false;
-      if (filter === "open") return restaurant.isOpenNow === true;
-      if (filter === "pickup") return restaurant.isPickupEnabled === true;
+      if (filter === "open" && restaurant.isOpenNow !== true) return false;
+      if (categoryRestaurantIds && !categoryRestaurantIds.has(restaurant.id)) return false;
       return true;
     });
-
-    if (filter === "rating") {
-      return [...rows].sort(
-        (left, right) => Number(right.ratingAvg ?? 0) - Number(left.ratingAvg ?? 0),
-      );
-    }
-
-    return rows;
-  }, [query, filter, restaurants]);
+  }, [query, filter, restaurants, categoryRestaurantIds]);
 
   useEffect(() => {
     const readCart = () => {
@@ -152,6 +174,7 @@ export function RestaurantsCatalogClient({ restaurants }: { restaurants: PublicR
   const resetCatalog = () => {
     setQuery("");
     setFilter("all");
+    setCategoryId(null);
   };
 
   return (
@@ -159,7 +182,7 @@ export function RestaurantsCatalogClient({ restaurants }: { restaurants: PublicR
       <header className="market-figma-header">
         <div className="market-figma-header__inner">
           <Link className="market-figma-brand" href="/restaurants" aria-label="JETKIZ">
-            jetkiz
+            <img src="/jetkiz-logo.svg" alt="JETKIZ" />
           </Link>
 
           <label className="market-figma-search">
@@ -199,49 +222,62 @@ export function RestaurantsCatalogClient({ restaurants }: { restaurants: PublicR
       </header>
 
       <main className="market-figma-main">
-        <section className="market-figma-promos" aria-label={ru ? "Предложения JETKIZ" : "JETKIZ ұсыныстары"}>
-          <article className="market-figma-promo market-figma-promo--green">
-            <div className="market-figma-promo__visual market-figma-promo__visual--feast" />
-          </article>
-          <article className="market-figma-promo market-figma-promo--yellow">
-            <div className="market-figma-promo__visual market-figma-promo__visual--table" />
-          </article>
-          <article className="market-figma-promo market-figma-promo--orange">
-            <div className="market-figma-promo__visual market-figma-promo__visual--burabay" />
-          </article>
-        </section>
+        {promos.length > 0 && (
+          <section
+            className={`market-figma-promos market-figma-promos--${Math.min(promos.length, 3)}`}
+            aria-label={ru ? "Акции JETKIZ" : "JETKIZ акциялары"}
+          >
+            {promos.map((promo) => {
+              const image = apiAssetUrl(promo.imageUrl);
+              const title = (ru ? promo.titleRu || promo.titleKk : promo.titleKk || promo.titleRu) || "";
+              return (
+                <article className="market-figma-promo market-figma-promo--cms" key={promo.id}>
+                  {image ? <img className="market-figma-promo__image" src={image} alt={title || "JETKIZ"} /> : null}
+                  {title ? <strong className="market-figma-promo__title">{title}</strong> : null}
+                </article>
+              );
+            })}
+          </section>
+        )}
 
-        <nav className="market-figma-categories" aria-label={ru ? "Категории еды" : "Тағам санаттары"}>
-          {categories.map((category) => (
-            <Link
-              key={category.slug}
-              href={`/shchuchinsk/${category.slug}`}
-              className={category.mobile ? "market-figma-category is-mobile" : "market-figma-category"}
-            >
-              <span className="market-figma-category__icon" aria-hidden="true">{category.icon}</span>
-              <span>{ru ? category.ru : category.kz}</span>
-            </Link>
-          ))}
-        </nav>
+        {categories.length > 0 && (
+          <nav className="market-figma-categories" aria-label={ru ? "Категории еды" : "Тағам санаттары"}>
+            {categories.map((category, index) => {
+              const image = apiAssetUrl(category.imageUrl);
+              const title = ru ? category.titleRu : category.titleKk || category.titleRu;
+              const active = categoryId === category.id;
+              return (
+                <button
+                  type="button"
+                  key={category.id}
+                  className={`market-figma-category${index < 4 ? " is-mobile" : ""}${active ? " is-active" : ""}`}
+                  onClick={() => setCategoryId(active ? null : category.id)}
+                >
+                  <span className="market-figma-category__icon" aria-hidden="true">
+                    {image ? <img src={image} alt="" /> : <span>•</span>}
+                  </span>
+                  <span>{title}</span>
+                </button>
+              );
+            })}
+          </nav>
+        )}
 
         <section className="market-figma-filters" aria-label={ru ? "Фильтры ресторанов" : "Мейрамхана сүзгілері"}>
-          {([
-            ["all", ru ? "Все рестораны" : "Барлық мейрамханалар"],
-            ["delivery", ru ? "Доставка" : "Жеткізу"],
-            ["pickup", ru ? "Самовывоз" : "Алып кету"],
-            ["open", ru ? "Открыто сейчас" : "Қазір ашық"],
-            ["rating", ru ? "Рейтинг" : "Рейтинг"],
-            ["promo", ru ? "Акции" : "Акциялар"],
-          ] as Array<[Filter, string]>).map(([value, label]) => (
-            <button
-              type="button"
-              key={value}
-              className={filter === value ? "is-active" : ""}
-              onClick={() => setFilter(value)}
-            >
-              {label}
-            </button>
-          ))}
+          <button
+            type="button"
+            className={filter === "all" ? "is-active" : ""}
+            onClick={() => setFilter("all")}
+          >
+            {ru ? "Все рестораны" : "Барлық мейрамханалар"}
+          </button>
+          <button
+            type="button"
+            className={filter === "open" ? "is-active" : ""}
+            onClick={() => setFilter("open")}
+          >
+            {ru ? "Открыто сейчас" : "Қазір ашық"}
+          </button>
         </section>
 
         <section className="market-figma-restaurants" aria-live="polite">
@@ -261,8 +297,8 @@ export function RestaurantsCatalogClient({ restaurants }: { restaurants: PublicR
                     ? "Список ресторанов сейчас недоступен. Обновите страницу чуть позже."
                     : "Мейрамханалар тізімі қазір қолжетімсіз. Кейінірек жаңартыңыз."
                   : ru
-                    ? "Измените запрос или выберите другой фильтр."
-                    : "Сұрауды немесе сүзгіні өзгертіңіз."}
+                    ? "Измените запрос, категорию или фильтр."
+                    : "Сұрауды, санатты немесе сүзгіні өзгертіңіз."}
               </p>
             </div>
           ) : (
@@ -317,15 +353,15 @@ export function RestaurantsCatalogClient({ restaurants }: { restaurants: PublicR
               })}
             </div>
           )}
-
-          <h2 className="market-figma-nearby">{ru ? "Рядом с вами" : "Жаныңызда"}</h2>
         </section>
       </main>
 
-      <Link className="market-floating-cart" href={cartHref} aria-label={ru ? "Открыть корзину" : "Себетті ашу"}>
-        <span className="market-floating-cart__icon"><CartIcon /></span>
-        {cartCount > 0 && <span className="market-floating-cart__badge">{cartCount > 99 ? "99+" : cartCount}</span>}
-      </Link>
+      {cartCount > 0 && (
+        <Link className="market-floating-cart" href={cartHref} aria-label={ru ? "Открыть корзину" : "Себетті ашу"}>
+          <span className="market-floating-cart__icon"><CartIcon /></span>
+          <span className="market-floating-cart__badge">{cartCount > 99 ? "99+" : cartCount}</span>
+        </Link>
+      )}
 
       <nav className="market-mobile-bottom" aria-label={ru ? "Основная навигация" : "Негізгі навигация"}>
         <Link className="is-active" href="/restaurants">
