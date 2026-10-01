@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PageShell, SiteFooter, SiteHeader } from "./components/SiteChrome";
+import { PageShell } from "./components/SiteChrome";
 import { getPublicRestaurants } from "./lib/jetkiz-api";
 import { RestaurantsCatalogClient } from "./restaurants/RestaurantsCatalogClient";
 
@@ -21,9 +21,7 @@ export default async function Home() {
 
   return (
     <PageShell>
-      <SiteHeader current="catalog" />
       <RestaurantsCatalogClient restaurants={restaurants} />
-      <SiteFooter />
     </PageShell>
   );
 }
