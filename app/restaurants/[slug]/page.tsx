@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import { PageShell, SiteFooter, SiteHeader } from "../../components/SiteChrome";
+import { PageShell, SiteFooter } from "../../components/SiteChrome";
 import { apiAssetUrl, getPublicMenu, getPublicRestaurantBySlug, restaurantPublicSlug } from "../../lib/jetkiz-api";
 import { RestaurantMenuClient } from "./RestaurantMenuClient";
 
