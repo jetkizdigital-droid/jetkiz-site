@@ -4518,3 +4518,143 @@ body {
     max-width: 230px;
   }
 }
+
+
+/* live CMS corrections */
+.market-figma-brand {
+  justify-content: flex-start;
+  color: transparent;
+  font-size: 0;
+}
+
+.market-figma-brand img {
+  width: 118px;
+  height: 54px;
+  display: block;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.market-figma-promos {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.market-figma-promos--1 {
+  grid-template-columns: 1fr;
+}
+
+.market-figma-promos--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.market-figma-promo--cms {
+  position: relative;
+  background: #f5f5f5;
+}
+
+.market-figma-promo__image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  filter: saturate(1.18) contrast(1.04);
+}
+
+.market-figma-promo__title {
+  position: absolute;
+  right: 18px;
+  bottom: 16px;
+  left: 18px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(0, 0, 0, .58);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.15;
+  backdrop-filter: blur(8px);
+}
+
+.market-figma-category {
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.market-figma-category.is-active {
+  outline: 2px solid var(--figma-green);
+  background: #effff1;
+}
+
+.market-figma-category__icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 42px;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.market-figma-category__icon img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  filter: saturate(1.2);
+}
+
+.market-figma-category__icon > span {
+  color: var(--figma-green);
+  font-size: 26px;
+}
+
+.page:has(.jetkiz-marketplace) .mega-footer {
+  margin-top: 70px;
+}
+
+@media (max-width: 700px) {
+  .market-figma-brand img {
+    width: 124px;
+    height: 44px;
+  }
+
+  .market-figma-promos {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .market-figma-promos::-webkit-scrollbar {
+    display: none;
+  }
+
+  .market-figma-promo {
+    width: 76vw;
+    min-width: 76vw;
+    flex: 0 0 76vw;
+    scroll-snap-align: start;
+  }
+
+  .market-figma-promo__title {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    padding: 9px 11px;
+    border-radius: 12px;
+    font-size: 14px;
+  }
+
+  .market-figma-category__icon {
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
+  }
+
+  .page:has(.jetkiz-marketplace) .mega-footer {
+    margin-top: 34px;
+    padding-bottom: 78px;
+  }
+}
