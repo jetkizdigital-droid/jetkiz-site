@@ -5701,3 +5701,193 @@ body {
   .restaurant-menu-product-grid { gap: 7px 6px; }
   .restaurant-menu-product__body { padding-inline: 7px; }
 }
+
+
+/* Backend CMS category product pages — same product language as Figma menu */
+.live-category-page {
+  min-height: 100vh;
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 30px 24px 100px;
+  background: #fff;
+}
+
+.live-category-page__head {
+  padding: 18px 0 20px;
+}
+
+.live-category-page__head > a {
+  color: #7d8795;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.live-category-page__head h1 {
+  margin: 10px 0 0;
+  font-size: clamp(38px, 5vw, 66px);
+  line-height: .95;
+  letter-spacing: -.055em;
+}
+
+.live-category-page__head p {
+  margin: 12px 0 0;
+  color: #7d8795;
+  font-size: 13px;
+}
+
+.live-category-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 22px;
+  padding-bottom: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.live-category-tabs::-webkit-scrollbar { display: none; }
+
+.live-category-tabs a {
+  min-width: max-content;
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 16px;
+  border-radius: 13px;
+  background: #f5f6f7;
+  color: #111;
+  font-size: 12px;
+  font-weight: 720;
+  text-decoration: none;
+}
+
+.live-category-tabs a.is-active {
+  background: #e8ffd3;
+  color: #087b1a;
+  font-weight: 820;
+}
+
+.live-category-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.live-category-product {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #edf0f2;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.live-category-product__image {
+  aspect-ratio: 1 / 1;
+  display: block;
+  overflow: hidden;
+  background: #eef2ed;
+}
+
+.live-category-product__image > img,
+.live-category-product__image .restaurant-menu-product__placeholder,
+.live-category-product__image .restaurant-menu-product__placeholder > img {
+  width: 100%;
+  height: 100%;
+}
+
+.live-category-product__image > img {
+  object-fit: cover;
+  filter: saturate(1.08);
+}
+
+.live-category-product__image .restaurant-menu-product__placeholder {
+  display: grid;
+  place-items: center;
+}
+
+.live-category-product__image .restaurant-menu-product__placeholder > img {
+  width: 76px;
+  height: 46px;
+  object-fit: contain;
+}
+
+.live-category-product__body {
+  min-height: 205px;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+}
+
+.live-category-product__body h2 {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.16;
+  letter-spacing: -.02em;
+}
+
+.live-category-product__body > strong {
+  margin-top: 5px;
+  font-size: 17px;
+}
+
+.live-category-product__restaurant {
+  margin-top: 6px;
+  color: #078f1b;
+  font-size: 10px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.live-category-product__body p {
+  display: -webkit-box;
+  margin: 7px 0 0;
+  overflow: hidden;
+  color: #7d8795;
+  font-size: 10px;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.live-category-product__body small {
+  margin-top: 6px;
+  color: #8e96a0;
+  font-size: 10px;
+}
+
+.live-category-product__button {
+  min-height: 38px;
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: #12b72b;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+@media (max-width: 1180px) {
+  .live-category-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+}
+
+@media (max-width: 760px) {
+  .live-category-page { padding: 18px 12px 82px; }
+  .live-category-page__head { padding-top: 10px; }
+  .live-category-page__head h1 { font-size: 38px; }
+  .live-category-tabs { margin-inline: -12px; padding-inline: 12px; }
+  .live-category-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 9px 7px;
+  }
+  .live-category-product { border-radius: 14px; }
+  .live-category-product__body { min-height: 180px; padding: 9px 8px; }
+  .live-category-product__body h2 { font-size: 11px; }
+  .live-category-product__body > strong { font-size: 14px; }
+  .live-category-product__restaurant,
+  .live-category-product__body p,
+  .live-category-product__body small { font-size: 8px; }
+  .live-category-product__button { min-height: 34px; font-size: 9px; }
+}
