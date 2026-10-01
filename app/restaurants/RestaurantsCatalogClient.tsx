@@ -50,9 +50,10 @@ function ProfileIcon() {
 function CartIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M3 4h2l2 11h10l2-7H7" />
-      <circle cx="9" cy="19" r="1.4" />
-      <circle cx="17" cy="19" r="1.4" />
+      <path d="M2.8 4.5h2.5l1.55 9.1a2.15 2.15 0 0 0 2.12 1.8h7.45a2.15 2.15 0 0 0 2.08-1.6L20 8H6.05" />
+      <path d="M9.1 11.4h7.7" />
+      <circle cx="9.2" cy="19" r="1.35" />
+      <circle cx="17.1" cy="19" r="1.35" />
     </svg>
   );
 }
@@ -171,12 +172,6 @@ export function RestaurantsCatalogClient({
     };
   }, [restaurants]);
 
-  const resetCatalog = () => {
-    setQuery("");
-    setFilter("all");
-    setCategoryId(null);
-  };
-
   return (
     <div className="jetkiz-marketplace">
       <header className="market-figma-header">
@@ -233,7 +228,6 @@ export function RestaurantsCatalogClient({
               return (
                 <article className="market-figma-promo market-figma-promo--cms" key={promo.id}>
                   {image ? <img className="market-figma-promo__image" src={image} alt={title || "JETKIZ"} /> : null}
-                  {title ? <strong className="market-figma-promo__title">{title}</strong> : null}
                 </article>
               );
             })}
@@ -267,7 +261,10 @@ export function RestaurantsCatalogClient({
           <button
             type="button"
             className={filter === "all" ? "is-active" : ""}
-            onClick={() => setFilter("all")}
+            onClick={() => {
+              setFilter("all");
+              setCategoryId(null);
+            }}
           >
             {ru ? "Все рестораны" : "Барлық мейрамханалар"}
           </button>
@@ -283,9 +280,6 @@ export function RestaurantsCatalogClient({
         <section className="market-figma-restaurants" aria-live="polite">
           <div className="market-figma-section-head">
             <h1>{ru ? "Популярные рестораны" : "Танымал мейрамханалар"}</h1>
-            <button type="button" onClick={resetCatalog}>
-              {ru ? "Смотреть все" : "Барлығын көру"} <span aria-hidden="true">→</span>
-            </button>
           </div>
 
           {filtered.length === 0 ? (
