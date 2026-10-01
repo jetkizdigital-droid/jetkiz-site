@@ -57,6 +57,50 @@ export type PublicMenu = {
   products?: PublicMenuItem[];
 };
 
+
+export type PublicHomePromo = {
+  id: string;
+  titleRu?: string | null;
+  titleKk?: string | null;
+  imageUrl?: string | null;
+  sortOrder?: number;
+  isActive?: boolean;
+};
+
+export type PublicHomeCategoryProduct = {
+  id: string;
+  productId: string;
+  sortOrder?: number;
+  isActive?: boolean;
+  product: {
+    id: string;
+    titleRu?: string | null;
+    titleKk?: string | null;
+    price?: number;
+    imageUrl?: string | null;
+    isAvailable?: boolean;
+    restaurantId: string;
+  };
+};
+
+export type PublicHomeCategory = {
+  id: string;
+  titleRu: string;
+  titleKk?: string | null;
+  imageUrl?: string | null;
+  sortOrder?: number;
+  isActive?: boolean;
+  products?: PublicHomeCategoryProduct[];
+};
+
+export type PublicHomeCms = {
+  supportWhatsAppNumber?: string | null;
+  promos: PublicHomePromo[];
+  promo?: PublicHomePromo | null;
+  categories: PublicHomeCategory[];
+  featuredProducts?: unknown[];
+};
+
 async function apiFetch<T>(path: string): Promise<T> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 5000);
@@ -81,6 +125,29 @@ async function apiFetch<T>(path: string): Promise<T> {
     return response.json() as Promise<T>;
   } finally {
     clearTimeout(timeout);
+  }
+}
+
+
+export async function getPublicHomeCms(): Promise<PublicHomeCms> {
+  try {
+    const payload = await apiFetch<Partial<PublicHomeCms>>("/home-cms/public");
+    return {
+      supportWhatsAppNumber: payload.supportWhatsAppNumber ?? null,
+      promos: Array.isArray(payload.promos) ? payload.promos : [],
+      promo: payload.promo ?? null,
+      categories: Array.isArray(payload.categories) ? payload.categories : [],
+      featuredProducts: Array.isArray(payload.featuredProducts) ? payload.featuredProducts : [],
+    };
+  } catch (error) {
+    console.error("Failed to load public home CMS", error);
+    return {
+      supportWhatsAppNumber: null,
+      promos: [],
+      promo: null,
+      categories: [],
+      featuredProducts: [],
+    };
   }
 }
 
