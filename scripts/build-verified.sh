@@ -19,9 +19,7 @@ hero_output="${SITES_PROJECT_ROOT}/public/generated/jetkiz-courier-burabay.webp"
 hero_sha256="6e649b24e6289ad9c39f36ff41113ef6923a7f33f3855e6153d23af26d5ca115"
 
 mkdir -p "$(dirname "${hero_output}")"
-cat "${hero_asset_dir}"/jetkiz-courier-burabay.part* \
-  | tr -d '\\r\\n' \
-  | base64 --decode > "${hero_output}"
+cat "${hero_asset_dir}"/jetkiz-courier-burabay.part* | base64 --decode > "${hero_output}"
 
 actual_hero_sha256="$(sha256sum "${hero_output}" | awk '{print $1}')"
 if [[ "${actual_hero_sha256}" != "${hero_sha256}" ]]; then
@@ -30,6 +28,7 @@ if [[ "${actual_hero_sha256}" != "${hero_sha256}" ]]; then
 fi
 
 echo "Prepared static courier hero asset."
+
 if [[ ! -x "${vinext}" ]]; then
   echo "vinext is unavailable. Run npm run install:ci and wait for it to finish before building." >&2
   exit 69
