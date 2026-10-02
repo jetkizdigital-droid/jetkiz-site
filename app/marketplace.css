@@ -6014,13 +6014,17 @@ body {
 
 .restaurant-menu-hero__photo--hq {
   position: absolute;
-  inset: 0;
   z-index: 0;
-  width: 100%;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: auto;
+  width: auto;
   height: 100%;
+  max-width: none;
   display: block !important;
-  object-fit: cover;
-  object-position: center center;
+  object-fit: contain;
+  object-position: right center;
   filter: none;
   image-rendering: auto;
 }
@@ -6039,8 +6043,12 @@ body {
 
 @media (max-width: 760px) {
   .restaurant-menu-hero__photo--hq {
-    object-fit: cover;
-    object-position: 58% center;
+    right: -18px;
+    width: auto;
+    height: 100%;
+    max-width: none;
+    object-fit: contain;
+    object-position: right center;
   }
 
   .restaurant-menu-hero__info {
