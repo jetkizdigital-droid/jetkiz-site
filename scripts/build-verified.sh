@@ -29,6 +29,17 @@ fi
 
 echo "Prepared static courier hero asset."
 
+hq_hero_output="${SITES_PROJECT_ROOT}/public/generated/jetkiz-courier-hq-final.webp"
+hq_hero_sha256="f67f649087ed342992895a807388c723e573708ed9a8c3e001a39b4abd630957"
+cat "${hero_asset_dir}"/jetkiz-courier-hq-final.part* | base64 --decode > "${hq_hero_output}"
+actual_hq_hero_sha256="$(sha256sum "${hq_hero_output}" | awk '{print $1}')"
+if [[ "${actual_hq_hero_sha256}" != "${hq_hero_sha256}" ]]; then
+  echo "HQ courier hero asset checksum mismatch." >&2
+  exit 69
+fi
+
+echo "Prepared HQ static courier hero asset."
+
 if [[ ! -x "${vinext}" ]]; then
   echo "vinext is unavailable. Run npm run install:ci and wait for it to finish before building." >&2
   exit 69
