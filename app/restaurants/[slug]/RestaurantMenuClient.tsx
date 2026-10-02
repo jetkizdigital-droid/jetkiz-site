@@ -226,10 +226,9 @@ export function RestaurantMenuClient({
       <main className="restaurant-menu-v2__main">
         <section className="restaurant-menu-hero">
           <div className="restaurant-menu-hero__scene" aria-hidden="true">
-            <div className="restaurant-menu-hero__landscape" />
             <img
               className="restaurant-menu-hero__courier-photo"
-              src="/generated/jetkiz-courier-burabay.webp"
+              src="/generated/jetkiz-courier-hero-hq-v3.jpg"
               alt=""
             />
           </div>
