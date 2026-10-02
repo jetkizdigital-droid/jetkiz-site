@@ -226,13 +226,9 @@ export function RestaurantMenuClient({
       <main className="restaurant-menu-v2__main">
         <section className="restaurant-menu-hero">
           <div className="restaurant-menu-hero__scene" aria-hidden="true">
-            <div className="restaurant-menu-hero__landscape-v4" />
-            <div className="restaurant-menu-hero__courier-frame-v4">
-              <img
-                className="restaurant-menu-hero__courier-image-v4"
-                src="/generated/jetkiz-courier-hq-final.webp"
-                alt=""
-              />
+            <div className="restaurant-menu-hero__wish">
+              <span className="restaurant-menu-hero__wish-kz">Ас болсын!</span>
+              <span className="restaurant-menu-hero__wish-ru">Приятного аппетита</span>
             </div>
           </div>
 
