@@ -235,7 +235,7 @@ export function SiteFooter() {
       </div>
       <div className="mega-footer__column mega-footer__contact">
         <strong>{t.footerContacts}</strong>
-        <a href="tel:+77086810693">+7 708 681 06 93</a>
+        <a href="tel:+77085139728">+7 708 513 9728</a>
         <a href="mailto:support@jetkiz.asia">support@jetkiz.asia</a>
         <p>{t.company}<br />{t.bin}<br />{t.address}</p>
       </div>

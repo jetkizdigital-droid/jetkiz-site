@@ -102,7 +102,7 @@ export function AccountDeletionPage() {
               <div><dt>{ru ? "Компания" : "Компания"}</dt><dd>{ru ? "ТОО «JETKIZ DIGITAL SYSTEMS»" : "«JETKIZ DIGITAL SYSTEMS» ЖШС"}</dd></div>
               <div><dt>{ru ? "БИН" : "БСН"}</dt><dd>260540025332</dd></div>
               <div><dt>Email</dt><dd><a href="mailto:support@jetkiz.asia">support@jetkiz.asia</a></dd></div>
-              <div><dt>{ru ? "Телефон" : "Телефон"}</dt><dd><a href="tel:+77086810693">+7 708 681 06 93</a></dd></div>
+              <div><dt>{ru ? "Телефон" : "Телефон"}</dt><dd><a href="tel:+77085139728">+7 708 513 9728</a></dd></div>
             </dl>
           </section>
         </article>

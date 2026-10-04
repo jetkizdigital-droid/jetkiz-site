@@ -621,7 +621,7 @@ export default function CourierOfferPage() {
               </div>
               <div>
                 <dt>Телефон поддержки</dt>
-                <dd><a href="tel:+77712672236">+7 771 267 2236</a></dd>
+                <dd><a href="tel:+77085139728">+7 708 513 9728</a></dd>
               </div>
               <div>
                 <dt>Сайт</dt>

@@ -69,7 +69,7 @@ export function LegalPage({ documentKey }: { documentKey: string }) {
                 <div><dt>{lang === "ru" ? "Компания" : "Компания"}</dt><dd>{common.company}</dd></div>
                 <div><dt>{lang === "ru" ? "БИН" : "БСН"}</dt><dd>260540025332</dd></div>
                 <div><dt>{lang === "ru" ? "Адрес" : "Мекенжайы"}</dt><dd>{common.address}</dd></div>
-                <div><dt>Телефон / WhatsApp</dt><dd><a href="tel:+77086810693">+7 708 681 06 93</a></dd></div>
+                <div><dt>Телефон / WhatsApp</dt><dd><a href="tel:+77085139728">+7 708 513 9728</a></dd></div>
                 <div><dt>Email</dt><dd><a href="mailto:support@jetkiz.asia">support@jetkiz.asia</a></dd></div>
               </dl>
             </section>
