@@ -37,6 +37,9 @@ export function LegalPage({ documentKey }: { documentKey: string }) {
               <span>{label}</span><Arrow />
             </a>
           ))}
+          <a href="/couriers/offer">
+            <span>{lang === "ru" ? "Оферта для курьеров" : "Курьерлерге арналған оферта"}</span><Arrow />
+          </a>
         </aside>
 
         <article className="document-content">
