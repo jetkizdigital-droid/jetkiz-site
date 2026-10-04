@@ -111,7 +111,14 @@ export function PartnerPage({ kind }: { kind: PartnerKind }) {
           <span className="kicker">{t.finalKicker}</span>
           <h2>{t.finalTitle}</h2>
           <p>{t.finalText}</p>
-          <a className="button button--dark" href={action} target="_blank" rel="noreferrer">{t.finalButton}<Arrow /></a>
+          <div className="hero__actions">
+            <a className="button button--dark" href={action} target="_blank" rel="noreferrer">{t.finalButton}<Arrow /></a>
+            {kind === "couriers" && (
+              <a className="button button--glass" href="/couriers/offer">
+                {lang === "ru" ? "Оферта для курьеров" : "Курьерлерге арналған оферта"}<Arrow />
+              </a>
+            )}
+          </div>
         </div>
       </section>
 
