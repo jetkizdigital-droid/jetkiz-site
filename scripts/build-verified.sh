@@ -45,6 +45,11 @@ if [[ ! -x "${vinext}" ]]; then
   exit 69
 fi
 
+# Never reuse a previous production artifact. vinext serves the generated dist/
+# directory, so an incremental/stale artifact can survive a source-only update.
+echo "Removing previous production artifact..."
+rm -rf "${SITES_PROJECT_ROOT}/dist"
+
 echo "Running bounded vinext build..."
 timeout \
   --signal=TERM \
