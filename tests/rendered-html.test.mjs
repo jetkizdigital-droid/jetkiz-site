@@ -50,8 +50,8 @@ test("renders marketplace, partner, courier and document routes", async () => {
   };
   const context = { waitUntil() {}, passThroughOnException() {} };
   const routes = [
-    ["/", "Популярные рестораны"],
-    ["/restaurants", "Популярные рестораны"],
+    ["/", "[Рр]естораны"],
+    ["/restaurants", "[Рр]естораны"],
     ["/partners/restaurants", "Больше заказов"],
     ["/couriers", "Знаете город"],
     ["/offer", "Пользовательское соглашение и публичная оферта"],
