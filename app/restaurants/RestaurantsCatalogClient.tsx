@@ -11,7 +11,7 @@ import {
   type PublicRestaurant,
 } from "../lib/jetkiz-api";
 
-type Filter = "all" | "open";
+type Filter = "home" | "all" | "open";
 
 function SearchIcon() {
   return (
@@ -65,16 +65,19 @@ function LocationDot() {
 export function RestaurantsCatalogClient({
   restaurants,
   home,
+  pinnedRestaurantIds,
 }: {
   restaurants: PublicRestaurant[];
   home: PublicHomeCms;
+  pinnedRestaurantIds: string[];
 }) {
   const { lang, setLang } = useLanguage();
   const { user, loading: authLoading, openLogin } = useWebAuth();
   const ru = lang === "ru";
+  const hasPinnedRestaurants = pinnedRestaurantIds.length > 0;
 
   const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState<Filter>("all");
+  const [filter, setFilter] = useState<Filter>(hasPinnedRestaurants ? "home" : "all");
   const [cartCount, setCartCount] = useState(0);
   const [cartHref, setCartHref] = useState("/restaurants");
 
@@ -96,20 +99,55 @@ export function RestaurantsCatalogClient({
     [home.categories],
   );
 
+  const pinnedOrder = useMemo(
+    () => new Map(pinnedRestaurantIds.map((id, index) => [id, index])),
+    [pinnedRestaurantIds],
+  );
+
   const filtered = useMemo(() => {
     const normalized = query.trim().toLowerCase();
 
-    return restaurants.filter((restaurant) => {
+    const result = restaurants.filter((restaurant) => {
       const matchesQuery =
         !normalized ||
-        [restaurant.nameRu, restaurant.nameKk, restaurant.address]
+        [restaurant.nameRu, restaurant.nameKk, restaurant.address, restaurant.descriptionRu, restaurant.descriptionKk]
           .some((value) => String(value ?? "").toLowerCase().includes(normalized));
 
       if (!matchesQuery) return false;
+
+      // The mobile home screen displays only restaurants explicitly pinned by
+      // CMS/admin. A typed search intentionally searches the full catalogue.
+      if (
+        filter === "home" &&
+        !normalized &&
+        hasPinnedRestaurants &&
+        !pinnedOrder.has(restaurant.id)
+      ) {
+        return false;
+      }
+
       if (filter === "open" && restaurant.canAcceptOrders !== true) return false;
       return true;
     });
-  }, [query, filter, restaurants]);
+
+    if (filter === "home" && !normalized && hasPinnedRestaurants) {
+      result.sort(
+        (left, right) =>
+          (pinnedOrder.get(left.id) ?? Number.MAX_SAFE_INTEGER) -
+          (pinnedOrder.get(right.id) ?? Number.MAX_SAFE_INTEGER),
+      );
+    }
+
+    return result;
+  }, [query, filter, restaurants, hasPinnedRestaurants, pinnedOrder]);
+
+  const sectionTitle = query.trim()
+    ? ru ? "Результаты поиска" : "Іздеу нәтижелері"
+    : filter === "home" && hasPinnedRestaurants
+      ? ru ? "Рестораны" : "Мейрамханалар"
+      : filter === "open"
+        ? ru ? "Принимают заказы" : "Тапсырыс қабылдайды"
+        : ru ? "Все рестораны" : "Барлық мейрамханалар";
 
   useEffect(() => {
     const readCart = () => {
@@ -239,6 +277,15 @@ export function RestaurantsCatalogClient({
         )}
 
         <section className="market-figma-filters" aria-label={ru ? "Фильтры ресторанов" : "Мейрамхана сүзгілері"}>
+          {hasPinnedRestaurants ? (
+            <button
+              type="button"
+              className={filter === "home" ? "is-active" : ""}
+              onClick={() => setFilter("home")}
+            >
+              {ru ? "На главной" : "Басты бетте"}
+            </button>
+          ) : null}
           <button
             type="button"
             className={filter === "all" ? "is-active" : ""}
@@ -257,7 +304,7 @@ export function RestaurantsCatalogClient({
 
         <section className="market-figma-restaurants" aria-live="polite">
           <div className="market-figma-section-head">
-            <h1>{ru ? "Популярные рестораны" : "Танымал мейрамханалар"}</h1>
+            <h1>{sectionTitle}</h1>
           </div>
 
           {filtered.length === 0 ? (
@@ -269,8 +316,8 @@ export function RestaurantsCatalogClient({
                     ? "Список ресторанов сейчас недоступен. Обновите страницу чуть позже."
                     : "Мейрамханалар тізімі қазір қолжетімсіз. Кейінірек жаңартыңыз."
                   : ru
-                    ? "Измените запрос, категорию или фильтр."
-                    : "Сұрауды, санатты немесе сүзгіні өзгертіңіз."}
+                    ? "Измените запрос или фильтр."
+                    : "Сұрауды немесе сүзгіні өзгертіңіз."}
               </p>
             </div>
           ) : (

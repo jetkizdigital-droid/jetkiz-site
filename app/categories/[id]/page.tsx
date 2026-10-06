@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageShell, SiteFooter, SiteHeader } from "../../components/SiteChrome";
 import {
-  apiAssetUrl,
-  formatKzt,
   getPublicHomeCms,
   getPublicMenu,
   getPublicRestaurants,
   restaurantPublicSlug,
   type PublicMenuItem,
 } from "../../lib/jetkiz-api";
+import {
+  CategoryProductsClient,
+  type CategoryClientGroup,
+  type CategoryClientTab,
+} from "./CategoryProductsClient";
 
 type PageProps = { params: Promise<{ id: string }> };
 
@@ -44,41 +46,85 @@ async function loadCategory(id: string) {
   );
   const menuByRestaurant = new Map(menuRows);
 
-  const entries = (category.products || [])
-    .filter((row) => row.isActive !== false && row.product?.isAvailable !== false)
-    .map((row) => {
-      const restaurant = restaurantById.get(row.product.restaurantId);
-      if (!restaurant) return null;
+  const groupByRestaurant = new Map<string, CategoryClientGroup>();
 
-      const menu = menuByRestaurant.get(restaurant.id);
-      const fullItem =
-        (menu?.items ?? menu?.products ?? []).find((item) => item.id === row.productId) ?? null;
+  for (const row of category.products || []) {
+    if (row.isActive === false || row.product?.isAvailable === false) continue;
 
-      const item: PublicMenuItem = fullItem ?? {
-        id: row.product.id,
-        titleRu: row.product.titleRu || "",
-        titleKk: row.product.titleKk,
-        price: Number(row.product.price ?? 0),
-        imageUrl: row.product.imageUrl,
-        isAvailable: row.product.isAvailable !== false,
+    const restaurant = restaurantById.get(row.product.restaurantId);
+    if (!restaurant) continue;
+
+    const menu = menuByRestaurant.get(restaurant.id);
+    const mergedRestaurant = { ...restaurant, ...(menu?.restaurant || {}) };
+
+    // Keep the web category contract identical to the client app: only
+    // products from restaurants that can currently accept an order are shown.
+    if (mergedRestaurant.canAcceptOrders !== true) continue;
+
+    const fullItem =
+      (menu?.items ?? menu?.products ?? []).find((item) => item.id === row.productId) ?? null;
+
+    const item: PublicMenuItem = fullItem ?? {
+      id: row.product.id,
+      titleRu: row.product.titleRu || "",
+      titleKk: row.product.titleKk,
+      price: Number(row.product.price ?? 0),
+      imageUrl: row.product.imageUrl,
+      isAvailable: row.product.isAvailable !== false,
+    };
+
+    if (
+      item.isAvailable === false ||
+      !item.titleRu ||
+      !Number.isFinite(Number(item.price)) ||
+      Number(item.price) <= 0
+    ) {
+      continue;
+    }
+
+    let group = groupByRestaurant.get(mergedRestaurant.id);
+    if (!group) {
+      group = {
+        restaurant: {
+          id: mergedRestaurant.id,
+          slug: restaurantPublicSlug(mergedRestaurant),
+          nameRu: mergedRestaurant.nameRu,
+          nameKk: mergedRestaurant.nameKk,
+          address: mergedRestaurant.address,
+        },
+        items: [],
       };
+      groupByRestaurant.set(mergedRestaurant.id, group);
+    }
 
-      if (!item.titleRu || !Number.isFinite(Number(item.price)) || Number(item.price) <= 0) {
-        return null;
-      }
+    group.items.push({
+      id: item.id,
+      titleRu: item.titleRu,
+      titleKk: item.titleKk,
+      price: Number(item.price),
+      imageUrl: item.imageUrl,
+      description: item.composition || item.description || null,
+      weight: item.weight || null,
+    });
+  }
 
-      return {
-        restaurant: { ...restaurant, ...(menu?.restaurant || {}) },
-        restaurantSlug: restaurantPublicSlug(restaurant),
-        item,
-      };
-    })
-    .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry));
+  const categories: CategoryClientTab[] = [...(home.categories || [])]
+    .filter((item) => item.isActive !== false)
+    .sort((left, right) => Number(left.sortOrder ?? 0) - Number(right.sortOrder ?? 0))
+    .map((item) => ({
+      id: item.id,
+      titleRu: item.titleRu,
+      titleKk: item.titleKk,
+    }));
 
   return {
-    home,
-    category,
-    entries,
+    category: {
+      id: category.id,
+      titleRu: category.titleRu,
+      titleKk: category.titleKk,
+    } satisfies CategoryClientTab,
+    categories,
+    groups: Array.from(groupByRestaurant.values()),
   };
 }
 
@@ -102,82 +148,14 @@ export default async function CategoryPage({ params }: PageProps) {
   const data = await loadCategory(id);
   if (!data) notFound();
 
-  const categories = [...(data.home.categories || [])]
-    .filter((item) => item.isActive !== false)
-    .sort((left, right) => Number(left.sortOrder ?? 0) - Number(right.sortOrder ?? 0));
-
   return (
     <PageShell>
       <SiteHeader current="catalog" />
-      <main className="live-category-page">
-        <div className="live-category-page__head">
-          <Link href="/restaurants">← Все рестораны</Link>
-          <h1>{data.category.titleRu}</h1>
-          <p>{data.entries.length} позиций из актуальных меню ресторанов</p>
-        </div>
-
-        <nav className="live-category-tabs" aria-label="Категории">
-          {categories.map((category) => (
-            <Link
-              key={category.id}
-              className={category.id === data.category.id ? "is-active" : ""}
-              href={`/categories/${encodeURIComponent(category.id)}`}
-            >
-              {category.titleRu}
-            </Link>
-          ))}
-        </nav>
-
-        {data.entries.length === 0 ? (
-          <div className="marketplace-empty marketplace-empty--compact">
-            <strong>В этой категории пока нет доступных блюд</strong>
-            <p>Страница обновляется автоматически из меню ресторанов.</p>
-          </div>
-        ) : (
-          <section className="live-category-grid">
-            {data.entries.map(({ restaurant, restaurantSlug, item }) => {
-              const image = apiAssetUrl(item.imageUrl);
-              const description = item.composition || item.description;
-
-              return (
-                <article className="live-category-product" key={`${restaurant.id}:${item.id}`}>
-                  <Link
-                    className="live-category-product__image"
-                    href={`/restaurants/${restaurantSlug}`}
-                  >
-                    {image ? (
-                      <img src={image} alt={item.titleRu} loading="lazy" />
-                    ) : (
-                      <span className="restaurant-menu-product__placeholder">
-                        <img src="/jetkiz-logo.svg" alt="" />
-                      </span>
-                    )}
-                  </Link>
-
-                  <div className="live-category-product__body">
-                    <h2>{item.titleRu}</h2>
-                    <strong>{formatKzt(Number(item.price))}</strong>
-                    <Link
-                      className="live-category-product__restaurant"
-                      href={`/restaurants/${restaurantSlug}`}
-                    >
-                      {restaurant.nameRu}
-                    </Link>
-                    {description && <p>{description}</p>}
-                    {item.weight && <small>{item.weight}</small>}
-                    <Link
-                      className="live-category-product__button"
-                      href={`/restaurants/${restaurantSlug}`}
-                    >
-                      Открыть меню
-                    </Link>
-                  </div>
-                </article>
-              );
-            })}
-          </section>
-        )}
-      </main>
+      <CategoryProductsClient
+        category={data.category}
+        categories={data.categories}
+        groups={data.groups}
+      />
       <SiteFooter />
     </PageShell>
   );
