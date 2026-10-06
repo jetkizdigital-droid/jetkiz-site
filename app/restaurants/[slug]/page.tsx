@@ -179,7 +179,9 @@ export default async function RestaurantPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData).replace(/</g, "\\u003c") }}
       />
-      <RestaurantMenuClient restaurant={mergedRestaurant} menu={menu} />
+      <div className={mergedRestaurant.canAcceptOrders ? "restaurant-ordering-active" : "restaurant-ordering-paused"}>
+        <RestaurantMenuClient restaurant={mergedRestaurant} menu={menu} />
+      </div>
       <SiteFooter />
     </PageShell>
   );
