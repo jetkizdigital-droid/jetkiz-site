@@ -1,0 +1,16 @@
+/* Keep public restaurant status aligned with the actual ability to place an order. */
+.restaurant-ordering-paused .restaurant-menu-hero__badges > span:first-child {
+  background: #eef1f4 !important;
+  color: #5f6875 !important;
+  font-size: 0 !important;
+}
+
+html[lang="ru"] .restaurant-ordering-paused .restaurant-menu-hero__badges > span:first-child::after {
+  content: "Не принимает заказы";
+  font-size: 12px;
+}
+
+html[lang="kk"] .restaurant-ordering-paused .restaurant-menu-hero__badges > span:first-child::after {
+  content: "Тапсырыс қабылдамайды";
+  font-size: 12px;
+}
