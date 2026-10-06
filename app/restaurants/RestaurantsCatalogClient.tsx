@@ -106,7 +106,7 @@ export function RestaurantsCatalogClient({
           .some((value) => String(value ?? "").toLowerCase().includes(normalized));
 
       if (!matchesQuery) return false;
-      if (filter === "open" && restaurant.isOpenNow !== true) return false;
+      if (filter === "open" && restaurant.canAcceptOrders !== true) return false;
       return true;
     });
   }, [query, filter, restaurants]);
@@ -251,7 +251,7 @@ export function RestaurantsCatalogClient({
             className={filter === "open" ? "is-active" : ""}
             onClick={() => setFilter("open")}
           >
-            {ru ? "Открыто сейчас" : "Қазір ашық"}
+            {ru ? "Принимают заказы" : "Тапсырыс қабылдайды"}
           </button>
         </section>
 
@@ -293,8 +293,12 @@ export function RestaurantsCatalogClient({
                       ) : (
                         <div className="market-figma-card__placeholder" aria-hidden="true" />
                       )}
-                      <span className={isOpen ? "market-figma-open is-open" : "market-figma-open"}>
-                        {isOpen ? (ru ? "Открыто" : "Ашық") : ru ? "Закрыто" : "Жабық"}
+                      <span className={canAccept ? "market-figma-open is-open" : "market-figma-open"}>
+                        {canAccept
+                          ? ru ? "Принимает заказы" : "Тапсырыс қабылдайды"
+                          : isOpen
+                            ? ru ? "Не принимает заказы" : "Тапсырыс қабылдамайды"
+                            : ru ? "Закрыто" : "Жабық"}
                       </span>
                       <span className="market-figma-heart" aria-hidden="true">♡</span>
                     </div>
@@ -316,7 +320,9 @@ export function RestaurantsCatalogClient({
                         <span className={canAccept ? "market-figma-accept is-active" : "market-figma-accept"}>
                           {canAccept
                             ? ru ? "Принимает заказы" : "Тапсырыс қабылдайды"
-                            : ru ? "Меню доступно" : "Мәзір қолжетімді"}
+                            : isOpen
+                              ? ru ? "Заказы остановлены" : "Тапсырыстар тоқтатылған"
+                              : ru ? "Закрыто" : "Жабық"}
                         </span>
                       </div>
                     </div>
