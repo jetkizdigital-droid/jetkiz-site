@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { PageShell, SiteFooter } from "./components/SiteChrome";
-import { getPublicHomeCms, getPublicRestaurants } from "./lib/jetkiz-api";
+import {
+  getPinnedPublicRestaurantIds,
+  getPublicHomeCms,
+  getPublicRestaurants,
+} from "./lib/jetkiz-api";
 import { RestaurantsCatalogClient } from "./restaurants/RestaurantsCatalogClient";
 
 export const metadata: Metadata = {
@@ -17,14 +21,19 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const [restaurants, home] = await Promise.all([
+  const [restaurants, home, pinnedRestaurantIds] = await Promise.all([
     getPublicRestaurants(),
     getPublicHomeCms(),
+    getPinnedPublicRestaurantIds(),
   ]);
 
   return (
     <PageShell>
-      <RestaurantsCatalogClient restaurants={restaurants} home={home} />
+      <RestaurantsCatalogClient
+        restaurants={restaurants}
+        home={home}
+        pinnedRestaurantIds={pinnedRestaurantIds}
+      />
       <SiteFooter />
     </PageShell>
   );

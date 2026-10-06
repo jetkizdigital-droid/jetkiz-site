@@ -57,7 +57,6 @@ export type PublicMenu = {
   products?: PublicMenuItem[];
 };
 
-
 export type PublicHomePromo = {
   id: string;
   titleRu?: string | null;
@@ -80,6 +79,17 @@ export type PublicHomeCategoryProduct = {
     imageUrl?: string | null;
     isAvailable?: boolean;
     restaurantId: string;
+    restaurant?: {
+      id: string;
+      nameRu?: string | null;
+      nameKk?: string | null;
+      status?: string | null;
+      runtimeStatus?: string | null;
+      isInApp?: boolean;
+      isAcceptingOrders?: boolean;
+      blockedAt?: string | null;
+      workingHours?: string | null;
+    };
   };
 };
 
@@ -128,7 +138,6 @@ async function apiFetch<T>(path: string): Promise<T> {
   }
 }
 
-
 export async function getPublicHomeCms(): Promise<PublicHomeCms> {
   try {
     const payload = await apiFetch<Partial<PublicHomeCms>>("/home-cms/public");
@@ -157,6 +166,28 @@ export async function getPublicRestaurants(): Promise<PublicRestaurant[]> {
     return Array.isArray(payload.items) ? assignRestaurantPublicSlugs(payload.items) : [];
   } catch (error) {
     console.error("Failed to load public restaurants", error);
+    return [];
+  }
+}
+
+/**
+ * The mobile home screen uses /restaurants/public/list -> pinned.
+ * Return only IDs here so the website can keep slugs from the full public list,
+ * including deterministic suffixes for restaurants with duplicate names.
+ */
+export async function getPinnedPublicRestaurantIds(): Promise<string[]> {
+  try {
+    const payload = await apiFetch<{ pinned?: Array<{ id?: string | null }> }>(
+      "/restaurants/public/list",
+    );
+
+    if (!Array.isArray(payload.pinned)) return [];
+
+    return payload.pinned
+      .map((restaurant) => String(restaurant?.id ?? "").trim())
+      .filter(Boolean);
+  } catch (error) {
+    console.error("Failed to load pinned public restaurants", error);
     return [];
   }
 }

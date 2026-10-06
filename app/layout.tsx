@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "./marketplace.css";
 import "./restaurant-ordering-status.css";
+import "./category-app-parity.css";
 import "./seo-catalog.css";
 import { LanguageProvider } from "./components/LanguageProvider";
 import { WebAuthProvider } from "./components/WebAuthProvider";
