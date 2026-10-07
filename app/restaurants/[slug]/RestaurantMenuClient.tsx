@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLanguage } from "../../components/LanguageProvider";
 import { useWebAuth } from "../../components/WebAuthProvider";
 import {
@@ -12,6 +12,7 @@ import {
   type PublicMenuItem,
   type PublicRestaurant,
 } from "../../lib/jetkiz-api";
+import { trackWebsiteSearch, trackWebsiteSearchClick } from "../../lib/search-analytics";
 
 type CartLine = {
   productId: string;
@@ -64,6 +65,10 @@ export function RestaurantMenuClient({
   const [cartLoaded, setCartLoaded] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [query, setQuery] = useState("");
+  const lastTrackedSearch = useRef<{ query: string; searchQueryLogId: string | null }>({
+    query: "",
+    searchQueryLogId: null,
+  });
   const cartKey = `jetkiz-cart:${restaurant.id}`;
   const publicSlug = restaurantPublicSlug(restaurant);
 
@@ -86,6 +91,31 @@ export function RestaurantMenuClient({
       // Keep cart in memory when storage is unavailable.
     }
   }, [cart, cartKey, cartLoaded]);
+
+  useEffect(() => {
+    const trimmed = query.trim();
+
+    if (!trimmed) {
+      lastTrackedSearch.current = { query: "", searchQueryLogId: null };
+      return;
+    }
+
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      void trackWebsiteSearch(trimmed, "website_restaurant_menu").then((result) => {
+        if (cancelled || !result) return;
+        lastTrackedSearch.current = {
+          query: result.query,
+          searchQueryLogId: result.searchQueryLogId,
+        };
+      });
+    }, 450);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [query]);
 
   const categories = useMemo(
     () =>
@@ -327,7 +357,7 @@ export function RestaurantMenuClient({
               </div>
             ) : (
               <div className="restaurant-menu-product-grid">
-                {visibleItems.map((item) => {
+                {visibleItems.map((item, index) => {
                   const quantity = quantityFor(item.id);
                   const image = apiAssetUrl(item.imageUrl);
                   const title = ru ? item.titleRu : item.titleKk || item.titleRu;
@@ -360,7 +390,35 @@ export function RestaurantMenuClient({
                         ) : quantity === 0 ? (
                           <button
                             className="restaurant-menu-product__add"
-                            onClick={() => changeQuantity(item, 1)}
+                            onClick={() => {
+                              const currentQuery = query.trim();
+
+                              if (currentQuery) {
+                                void trackWebsiteSearchClick({
+                                  query: currentQuery,
+                                  searchQueryLogId:
+                                    lastTrackedSearch.current.query === currentQuery
+                                      ? lastTrackedSearch.current.searchQueryLogId
+                                      : null,
+                                  entityType: "product",
+                                  entityId: item.id,
+                                  position: index + 1,
+                                  metadata: {
+                                    source: "website_restaurant_menu",
+                                    title,
+                                    productId: item.id,
+                                    productTitle: title,
+                                    restaurantId: restaurant.id,
+                                    restaurantName: restaurantName || restaurant.nameRu,
+                                    price: item.price,
+                                    categoryId: item.categoryId ?? null,
+                                    activeCategory,
+                                  },
+                                });
+                              }
+
+                              changeQuantity(item, 1);
+                            }}
                           >
                             + {ru ? "Добавить" : "Қосу"}
                           </button>
