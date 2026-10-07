@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLanguage } from "../components/LanguageProvider";
 import { useWebAuth } from "../components/WebAuthProvider";
 import {
@@ -10,6 +10,7 @@ import {
   type PublicHomeCms,
   type PublicRestaurant,
 } from "../lib/jetkiz-api";
+import { trackWebsiteSearch, trackWebsiteSearchClick } from "../lib/search-analytics";
 
 type Filter = "home" | "all" | "open";
 
@@ -80,6 +81,10 @@ export function RestaurantsCatalogClient({
   const [filter, setFilter] = useState<Filter>(hasPinnedRestaurants ? "home" : "all");
   const [cartCount, setCartCount] = useState(0);
   const [cartHref, setCartHref] = useState("/restaurants");
+  const lastTrackedSearch = useRef<{ query: string; searchQueryLogId: string | null }>({
+    query: "",
+    searchQueryLogId: null,
+  });
 
   const promos = useMemo(
     () =>
@@ -148,6 +153,31 @@ export function RestaurantsCatalogClient({
       : filter === "open"
         ? ru ? "Принимают заказы" : "Тапсырыс қабылдайды"
         : ru ? "Все рестораны" : "Барлық мейрамханалар";
+
+  useEffect(() => {
+    const trimmed = query.trim();
+
+    if (!trimmed) {
+      lastTrackedSearch.current = { query: "", searchQueryLogId: null };
+      return;
+    }
+
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      void trackWebsiteSearch(trimmed, "website_catalog").then((result) => {
+        if (cancelled || !result) return;
+        lastTrackedSearch.current = {
+          query: result.query,
+          searchQueryLogId: result.searchQueryLogId,
+        };
+      });
+    }, 450);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [query]);
 
   useEffect(() => {
     const readCart = () => {
@@ -322,7 +352,7 @@ export function RestaurantsCatalogClient({
             </div>
           ) : (
             <div className="market-figma-grid">
-              {filtered.map((restaurant) => {
+              {filtered.map((restaurant, index) => {
                 const cover = apiAssetUrl(restaurant.coverImageUrl);
                 const isOpen = restaurant.isOpenNow === true;
                 const canAccept = restaurant.canAcceptOrders === true;
@@ -333,7 +363,34 @@ export function RestaurantsCatalogClient({
                 const rating = Number(restaurant.ratingAvg ?? 0);
 
                 return (
-                  <Link className="market-figma-card" href={`/restaurants/${publicSlug}`} key={restaurant.id}>
+                  <Link
+                    className="market-figma-card"
+                    href={`/restaurants/${publicSlug}`}
+                    key={restaurant.id}
+                    onClick={() => {
+                      const currentQuery = query.trim();
+                      if (!currentQuery) return;
+
+                      void trackWebsiteSearchClick({
+                        query: currentQuery,
+                        searchQueryLogId:
+                          lastTrackedSearch.current.query === currentQuery
+                            ? lastTrackedSearch.current.searchQueryLogId
+                            : null,
+                        entityType: "restaurant",
+                        entityId: restaurant.id,
+                        position: index + 1,
+                        metadata: {
+                          source: "website_catalog",
+                          title: name || restaurant.nameRu,
+                          restaurantId: restaurant.id,
+                          restaurantName: name || restaurant.nameRu,
+                          ratingAvg: rating,
+                          ...(restaurant.address ? { address: restaurant.address } : {}),
+                        },
+                      });
+                    }}
+                  >
                     <div className="market-figma-card__media">
                       {cover ? (
                         <img src={cover} alt={name || "JETKIZ"} loading="lazy" />
