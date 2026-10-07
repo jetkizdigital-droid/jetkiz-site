@@ -129,16 +129,31 @@ export function RestaurantMenuClient({
 
   const visibleItems = useMemo(() => {
     const normalized = query.trim().toLowerCase();
+
     return items.filter((item) => {
-      if (activeCategory !== "all" && item.categoryId !== activeCategory) return false;
+      // A menu search must search the whole restaurant menu, not only the
+      // category that happened to be selected before the customer typed.
+      if (
+        !normalized &&
+        activeCategory !== "all" &&
+        item.categoryId !== activeCategory
+      ) {
+        return false;
+      }
+
       if (!normalized) return true;
+
       return [
         item.titleRu,
         item.titleKk,
         item.composition,
         item.description,
         item.weight,
-      ].some((value) => String(value ?? "").toLowerCase().includes(normalized));
+        item.categoryNameRu,
+        item.categoryNameKk,
+      ].some((value) =>
+        String(value ?? "").trim().toLowerCase().includes(normalized),
+      );
     });
   }, [activeCategory, items, query]);
 
@@ -191,8 +206,11 @@ export function RestaurantMenuClient({
     ? restaurant.nameRu || restaurant.nameKk
     : restaurant.nameKk || restaurant.nameRu;
 
-  const activeCategoryTitle =
-    activeCategory === "all"
+  const activeCategoryTitle = query.trim()
+    ? ru
+      ? "Результаты поиска"
+      : "Іздеу нәтижелері"
+    : activeCategory === "all"
       ? ru ? "Все блюда" : "Барлық тағамдар"
       : ru
         ? categories.find((category) => category.id === activeCategory)?.titleRu
@@ -353,7 +371,18 @@ export function RestaurantMenuClient({
 
             {visibleItems.length === 0 ? (
               <div className="marketplace-empty marketplace-empty--compact">
-                <strong>{ru ? "В этой категории пока пусто" : "Бұл санат әзірге бос"}</strong>
+                <strong>
+                  {query.trim()
+                    ? ru ? "Ничего не нашли" : "Ештеңе табылмады"
+                    : ru ? "В этой категории пока пусто" : "Бұл санат әзірге бос"}
+                </strong>
+                {query.trim() ? (
+                  <p>
+                    {ru
+                      ? "Попробуйте изменить запрос."
+                      : "Сұрауды өзгертіп көріңіз."}
+                  </p>
+                ) : null}
               </div>
             ) : (
               <div className="restaurant-menu-product-grid">
