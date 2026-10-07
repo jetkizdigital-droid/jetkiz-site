@@ -3904,6 +3904,30 @@ body {
   gap: 20px;
 }
 
+.market-search-results {
+  display: grid;
+  gap: 34px;
+}
+
+.market-search-group {
+  min-width: 0;
+}
+
+.market-search-group__title {
+  margin: 0 0 14px;
+  color: #111;
+  font-size: 22px;
+  font-weight: 820;
+  letter-spacing: -.025em;
+}
+
+.market-search-product-price {
+  color: #111;
+  font-size: 17px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
 .market-figma-card {
   min-width: 0;
   height: 350px;
