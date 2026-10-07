@@ -8,10 +8,54 @@ const SEARCH_SESSION_KEY = "jetkiz-search-session-id";
 const DEVICE_ID_KEY = "jetkiz-device-id";
 const APP_VERSION = "web-1";
 
+export type WebsiteSearchRestaurant = {
+  id: string;
+  name: string;
+  nameRu: string;
+  nameKk: string;
+  address: string | null;
+  workingHours: string | null;
+  coverImageUrl: string | null;
+  ratingAvg: number;
+  ratingCount: number;
+  status: string;
+};
+
+export type WebsiteSearchProduct = {
+  id: string;
+  titleRu: string;
+  titleKk: string;
+  title: string;
+  price: number;
+  imageUrl: string | null;
+  effectiveImageUrl: string | null;
+  description: string | null;
+  weight: string | null;
+  isDrink: boolean;
+  isAvailable: boolean;
+  restaurantId: string;
+  restaurantName: string;
+  restaurant: {
+    id: string;
+    name: string;
+    nameRu: string;
+    nameKk: string;
+    status: string;
+  };
+  category: {
+    id: string;
+    titleRu: string;
+    titleKk: string;
+  } | null;
+};
+
 export type WebsiteSearchTrackResult = {
   query: string;
+  restaurants: WebsiteSearchRestaurant[];
+  products: WebsiteSearchProduct[];
   searchQueryLogId: string | null;
   resultsCount: number;
+  hasMore: boolean;
 };
 
 type SearchClickInput = {
@@ -118,16 +162,22 @@ export async function trackWebsiteSearch(
     if (!response.ok) return null;
 
     const payload = (await response.json()) as {
+      restaurants?: WebsiteSearchRestaurant[];
+      products?: WebsiteSearchProduct[];
       meta?: {
         searchQueryLogId?: string | null;
         resultsCount?: number;
+        hasMore?: boolean;
       };
     };
 
     return {
       query,
+      restaurants: Array.isArray(payload.restaurants) ? payload.restaurants : [],
+      products: Array.isArray(payload.products) ? payload.products : [],
       searchQueryLogId: payload.meta?.searchQueryLogId ?? null,
       resultsCount: Number(payload.meta?.resultsCount ?? 0),
+      hasMore: payload.meta?.hasMore === true,
     };
   } catch {
     return null;
