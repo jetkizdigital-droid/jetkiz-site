@@ -10,7 +10,11 @@ import {
   type PublicHomeCms,
   type PublicRestaurant,
 } from "../lib/jetkiz-api";
-import { trackWebsiteSearch, trackWebsiteSearchClick } from "../lib/search-analytics";
+import {
+  trackWebsiteSearch,
+  trackWebsiteSearchClick,
+  type WebsiteSearchTrackResult,
+} from "../lib/search-analytics";
 
 type Filter = "home" | "all" | "open";
 
@@ -81,6 +85,9 @@ export function RestaurantsCatalogClient({
   const [filter, setFilter] = useState<Filter>(hasPinnedRestaurants ? "home" : "all");
   const [cartCount, setCartCount] = useState(0);
   const [cartHref, setCartHref] = useState("/restaurants");
+  const [searchResult, setSearchResult] = useState<WebsiteSearchTrackResult | null>(null);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchFailed, setSearchFailed] = useState(false);
   const lastTrackedSearch = useRef<{ query: string; searchQueryLogId: string | null }>({
     query: "",
     searchQueryLogId: null,
@@ -110,21 +117,9 @@ export function RestaurantsCatalogClient({
   );
 
   const filtered = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
-
     const result = restaurants.filter((restaurant) => {
-      const matchesQuery =
-        !normalized ||
-        [restaurant.nameRu, restaurant.nameKk, restaurant.address, restaurant.descriptionRu, restaurant.descriptionKk]
-          .some((value) => String(value ?? "").toLowerCase().includes(normalized));
-
-      if (!matchesQuery) return false;
-
-      // The mobile home screen displays only restaurants explicitly pinned by
-      // CMS/admin. A typed search intentionally searches the full catalogue.
       if (
         filter === "home" &&
-        !normalized &&
         hasPinnedRestaurants &&
         !pinnedOrder.has(restaurant.id)
       ) {
@@ -135,7 +130,7 @@ export function RestaurantsCatalogClient({
       return true;
     });
 
-    if (filter === "home" && !normalized && hasPinnedRestaurants) {
+    if (filter === "home" && hasPinnedRestaurants) {
       result.sort(
         (left, right) =>
           (pinnedOrder.get(left.id) ?? Number.MAX_SAFE_INTEGER) -
@@ -144,7 +139,7 @@ export function RestaurantsCatalogClient({
     }
 
     return result;
-  }, [query, filter, restaurants, hasPinnedRestaurants, pinnedOrder]);
+  }, [filter, restaurants, hasPinnedRestaurants, pinnedOrder]);
 
   const sectionTitle = query.trim()
     ? ru ? "Результаты поиска" : "Іздеу нәтижелері"
@@ -158,18 +153,35 @@ export function RestaurantsCatalogClient({
     const trimmed = query.trim();
 
     if (!trimmed) {
+      setSearchResult(null);
+      setSearchLoading(false);
+      setSearchFailed(false);
       lastTrackedSearch.current = { query: "", searchQueryLogId: null };
       return;
     }
 
+    setSearchResult(null);
+    setSearchLoading(true);
+    setSearchFailed(false);
+
     let cancelled = false;
     const timer = window.setTimeout(() => {
       void trackWebsiteSearch(trimmed, "website_catalog").then((result) => {
-        if (cancelled || !result) return;
+        if (cancelled) return;
+
+        if (!result) {
+          setSearchFailed(true);
+          setSearchLoading(false);
+          return;
+        }
+
         lastTrackedSearch.current = {
           query: result.query,
           searchQueryLogId: result.searchQueryLogId,
         };
+        setSearchResult(result);
+        setSearchFailed(false);
+        setSearchLoading(false);
       });
     }, 450);
 
@@ -178,6 +190,17 @@ export function RestaurantsCatalogClient({
       window.clearTimeout(timer);
     };
   }, [query]);
+
+  const trimmedQuery = query.trim();
+  const searchedRestaurants = useMemo(() => {
+    if (!searchResult) return [];
+
+    return searchResult.restaurants
+      .map((item) => restaurants.find((restaurant) => restaurant.id === item.id))
+      .filter((item): item is PublicRestaurant => Boolean(item));
+  }, [restaurants, searchResult]);
+
+  const searchedProducts = searchResult?.products ?? [];
 
   useEffect(() => {
     const readCart = () => {
@@ -337,7 +360,187 @@ export function RestaurantsCatalogClient({
             <h1>{sectionTitle}</h1>
           </div>
 
-          {filtered.length === 0 ? (
+          {trimmedQuery ? (
+            searchLoading ? (
+              <div className="market-figma-empty">
+                <strong>{ru ? "Ищем…" : "Іздеп жатырмыз…"}</strong>
+                <p>{ru ? "Проверяем рестораны и блюда." : "Мейрамханалар мен тағамдарды тексеріп жатырмыз."}</p>
+              </div>
+            ) : searchFailed ? (
+              <div className="market-figma-empty">
+                <strong>{ru ? "Поиск временно недоступен" : "Іздеу уақытша қолжетімсіз"}</strong>
+                <p>{ru ? "Попробуйте ещё раз." : "Қайта байқап көріңіз."}</p>
+              </div>
+            ) : searchResult &&
+              searchedRestaurants.length === 0 &&
+              searchedProducts.length === 0 ? (
+              <div className="market-figma-empty">
+                <strong>{ru ? "Ничего не нашли" : "Ештеңе табылмады"}</strong>
+                <p>{ru ? "Измените запрос." : "Сұрауды өзгертіңіз."}</p>
+              </div>
+            ) : (
+              <div className="market-search-results">
+                {searchedRestaurants.length > 0 ? (
+                  <div className="market-search-group">
+                    <h2 className="market-search-group__title">
+                      {ru ? "Рестораны" : "Мейрамханалар"}
+                    </h2>
+                    <div className="market-figma-grid">
+                      {searchedRestaurants.map((restaurant, index) => {
+                        const cover = apiAssetUrl(restaurant.coverImageUrl);
+                        const isOpen = restaurant.isOpenNow === true;
+                        const canAccept = restaurant.canAcceptOrders === true;
+                        const publicSlug = restaurantPublicSlug(restaurant);
+                        const name = ru
+                          ? restaurant.nameRu || restaurant.nameKk
+                          : restaurant.nameKk || restaurant.nameRu;
+                        const rating = Number(restaurant.ratingAvg ?? 0);
+
+                        return (
+                          <Link
+                            className="market-figma-card"
+                            href={`/restaurants/${publicSlug}`}
+                            key={restaurant.id}
+                            onClick={() => {
+                              void trackWebsiteSearchClick({
+                                query: trimmedQuery,
+                                searchQueryLogId: searchResult?.searchQueryLogId ?? null,
+                                entityType: "restaurant",
+                                entityId: restaurant.id,
+                                position: index + 1,
+                                metadata: {
+                                  source: "website_catalog",
+                                  title: name || restaurant.nameRu,
+                                  restaurantId: restaurant.id,
+                                  restaurantName: name || restaurant.nameRu,
+                                  ratingAvg: rating,
+                                  ...(restaurant.address ? { address: restaurant.address } : {}),
+                                },
+                              });
+                            }}
+                          >
+                            <div className="market-figma-card__media">
+                              {cover ? (
+                                <img src={cover} alt={name || "JETKIZ"} loading="lazy" />
+                              ) : (
+                                <div className="market-figma-card__placeholder" aria-hidden="true" />
+                              )}
+                              <span className={canAccept ? "market-figma-open is-open" : "market-figma-open"}>
+                                {canAccept
+                                  ? ru ? "Принимает заказы" : "Тапсырыс қабылдайды"
+                                  : isOpen
+                                    ? ru ? "Не принимает заказы" : "Тапсырыс қабылдамайды"
+                                    : ru ? "Закрыто" : "Жабық"}
+                              </span>
+                            </div>
+
+                            <div className="market-figma-card__body">
+                              <div className="market-figma-card__title">
+                                <h2>{name}</h2>
+                                {rating > 0 && (
+                                  <span className="market-figma-rating">
+                                    <b>★</b> {rating.toFixed(1)}
+                                  </span>
+                                )}
+                              </div>
+                              <p>{restaurant.address || "Щучинск"}</p>
+                              <div className="market-figma-card__meta">
+                                <span className="market-figma-time">◷&nbsp; 30–60 мин</span>
+                                <span className={canAccept ? "market-figma-accept is-active" : "market-figma-accept"}>
+                                  {canAccept
+                                    ? ru ? "Принимает заказы" : "Тапсырыс қабылдайды"
+                                    : ru ? "Недоступно" : "Қолжетімсіз"}
+                                </span>
+                              </div>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : null}
+
+                {searchedProducts.length > 0 ? (
+                  <div className="market-search-group">
+                    <h2 className="market-search-group__title">
+                      {ru ? "Блюда и напитки" : "Тағамдар мен сусындар"}
+                    </h2>
+                    <div className="market-figma-grid">
+                      {searchedProducts.map((product, index) => {
+                        const restaurant = restaurants.find(
+                          (item) => item.id === product.restaurantId,
+                        );
+                        if (!restaurant) return null;
+
+                        const href = `/restaurants/${restaurantPublicSlug(restaurant)}`;
+                        const image = apiAssetUrl(
+                          product.effectiveImageUrl || product.imageUrl,
+                        );
+                        const title = ru
+                          ? product.titleRu || product.titleKk || product.title
+                          : product.titleKk || product.titleRu || product.title;
+                        const restaurantName = ru
+                          ? restaurant.nameRu || restaurant.nameKk
+                          : restaurant.nameKk || restaurant.nameRu;
+                        const position = searchedRestaurants.length + index + 1;
+
+                        return (
+                          <Link
+                            className="market-figma-card market-figma-card--product"
+                            href={href}
+                            key={product.id}
+                            onClick={() => {
+                              void trackWebsiteSearchClick({
+                                query: trimmedQuery,
+                                searchQueryLogId: searchResult?.searchQueryLogId ?? null,
+                                entityType: "product",
+                                entityId: product.id,
+                                position,
+                                metadata: {
+                                  source: "website_catalog",
+                                  title,
+                                  productId: product.id,
+                                  productTitle: title,
+                                  restaurantId: product.restaurantId,
+                                  restaurantName,
+                                  price: product.price,
+                                },
+                              });
+                            }}
+                          >
+                            <div className="market-figma-card__media">
+                              {image ? (
+                                <img src={image} alt={title} loading="lazy" />
+                              ) : (
+                                <div className="market-figma-card__placeholder" aria-hidden="true" />
+                              )}
+                              <span className="market-figma-open is-open">
+                                {ru ? "Блюдо" : "Тағам"}
+                              </span>
+                            </div>
+                            <div className="market-figma-card__body">
+                              <div className="market-figma-card__title">
+                                <h2>{title}</h2>
+                              </div>
+                              <p>{restaurantName}</p>
+                              <div className="market-figma-card__meta">
+                                <span className="market-search-product-price">
+                                  {new Intl.NumberFormat("ru-KZ").format(product.price)} ₸
+                                </span>
+                                <span className="market-figma-accept is-active">
+                                  {ru ? "Открыть ресторан" : "Мейрамхананы ашу"}
+                                </span>
+                              </div>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            )
+          ) : filtered.length === 0 ? (
             <div className="market-figma-empty">
               <strong>{ru ? "Ничего не нашли" : "Ештеңе табылмады"}</strong>
               <p>
@@ -346,8 +549,8 @@ export function RestaurantsCatalogClient({
                     ? "Список ресторанов сейчас недоступен. Обновите страницу чуть позже."
                     : "Мейрамханалар тізімі қазір қолжетімсіз. Кейінірек жаңартыңыз."
                   : ru
-                    ? "Измените запрос или фильтр."
-                    : "Сұрауды немесе сүзгіні өзгертіңіз."}
+                    ? "Измените фильтр."
+                    : "Сүзгіні өзгертіңіз."}
               </p>
             </div>
           ) : (
@@ -367,29 +570,6 @@ export function RestaurantsCatalogClient({
                     className="market-figma-card"
                     href={`/restaurants/${publicSlug}`}
                     key={restaurant.id}
-                    onClick={() => {
-                      const currentQuery = query.trim();
-                      if (!currentQuery) return;
-
-                      void trackWebsiteSearchClick({
-                        query: currentQuery,
-                        searchQueryLogId:
-                          lastTrackedSearch.current.query === currentQuery
-                            ? lastTrackedSearch.current.searchQueryLogId
-                            : null,
-                        entityType: "restaurant",
-                        entityId: restaurant.id,
-                        position: index + 1,
-                        metadata: {
-                          source: "website_catalog",
-                          title: name || restaurant.nameRu,
-                          restaurantId: restaurant.id,
-                          restaurantName: name || restaurant.nameRu,
-                          ratingAvg: rating,
-                          ...(restaurant.address ? { address: restaurant.address } : {}),
-                        },
-                      });
-                    }}
                   >
                     <div className="market-figma-card__media">
                       {cover ? (
